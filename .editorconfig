@@ -11,6 +11,8 @@ charset = utf-8
 end_of_line = lf
 
 [*.py]
+# isort options
+known_standard_library=pathlib
 multi_line_output=5
 
 [*.bat]

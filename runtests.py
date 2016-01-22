@@ -46,7 +46,10 @@ def run_flake8():
     print('Running flake8 code linting')
     try:
         original_argv = sys.argv
-        sys.argv = ['flake8', 'flake8_tautological_imports', 'tests']
+        sys.argv = [
+            'flake8',
+            'flake8_tidy_imports.py', 'tests'
+        ]
         did_fail = False
         flake8_main()
     except SystemExit:
@@ -66,7 +69,7 @@ def run_2to3():
         '-f', 'set_literal',
         '-f', 'tuple_params',
         '-j', '4',
-        'flake8_tautological_imports', 'tests'
+        'flake8_tidy_imports.py', 'tests'
     ])
     print('2to3 failed' if ret else '2to3 passed')
     return ret
@@ -76,7 +79,7 @@ def run_isort():
     print('Running isort check')
     return subprocess.call([
         'isort', '--recursive', '--check-only', '--diff',
-        'flake8_tautological_imports', 'tests'
+        'flake8_tidy_imports.py', 'tests'
     ])
 
 

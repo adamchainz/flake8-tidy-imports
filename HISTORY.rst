@@ -2,6 +2,13 @@
 History
 =======
 
+Pending Release
+---------------
+
+* New release notes here
+* Removed support for Django 1.7
+
+
 1.0.0 (2016-01-23)
 ------------------
 

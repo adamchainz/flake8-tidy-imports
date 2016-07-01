@@ -39,7 +39,7 @@ with open('HISTORY.rst') as history_file:
 
 setup(
     name='flake8-tidy-imports',
-    version='1.0.0',
+    version=version,
     description="A flake8 plugin that helps you write tidier imports.",
     long_description=readme + '\n\n' + history,
     author="Adam Johnson",

@@ -25,7 +25,7 @@ def teardown_module(module):
     shutil.rmtree(str(TMP_DIR))
 
 
-def run_flake8(file_contents):
+def run_flake8(file_contents, extra_args=None):
     with open(str(TMP_DIR / "example.py"), 'w') as tempf:
         tempf.write(dedent(file_contents).strip() + '\n')
 
@@ -40,6 +40,8 @@ def run_flake8(file_contents):
             '--exit-zero',
             'example.py',
         ]
+        if extra_args:
+            sys.argv.extend(extra_args)
 
         # Run it
         with captured_stdout() as stdout:
@@ -52,6 +54,9 @@ def run_flake8(file_contents):
     finally:
         sys.argv = orig_args
         os.chdir(orig_dir)
+
+
+# I200
 
 
 def test_I200_pass_1():
@@ -149,3 +154,67 @@ def test_I200_from_fail_2():
         "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
         "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import baz'.",
     }
+
+
+# I201
+
+
+def test_I201_import_mock():
+    errors = run_flake8(
+        """
+        import mock
+
+        mock
+        """,
+        ['--banned-modules', 'mock = Use unittest.mock instead']
+    )
+    assert errors == [
+        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+    ]
+
+
+def test_I201_import_mock_and_others():
+    errors = run_flake8(
+        """
+        import ast, mock
+
+
+        ast + mock
+        """,
+        ['--banned-modules', 'mock = Use unittest.mock instead']
+    )
+    assert set(errors) == {
+        'example.py:1:11: E401 multiple imports on one line',
+        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+    }
+
+
+def test_I201_import_mock_and_others_all_banned():
+    errors = run_flake8(
+        """
+        import ast, mock
+
+
+        ast + mock
+        """,
+        ['--banned-modules', 'mock = foo\nast = bar']
+    )
+    assert set(errors) == {
+        'example.py:1:11: E401 multiple imports on one line',
+        "example.py:1:1: I201 Banned module 'mock' imported - foo.",
+        "example.py:1:1: I201 Banned module 'ast' imported - bar.",
+    }
+
+
+def test_I201_from_mock_import():
+    errors = run_flake8(
+        """
+        from mock import Mock
+
+        Mock
+        """,
+        ['--banned-modules', 'mock = Use unittest.mock instead']
+    )
+    assert errors == [
+        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+    ]

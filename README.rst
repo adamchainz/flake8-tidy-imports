@@ -30,11 +30,26 @@ been picked up with:
     $ flake8 --version
     2.4.1 (pep8: 1.7.0, pyflakes: 0.8.1, flake8-tidy-imports: 1.0.0, mccabe: 0.3.1) CPython 2.7.11 on Darwin
 
+Options
+-------
+
+``banned-modules``
+~~~~~~~~~~~~~~~~~~
+
+An equals-delimited map of modules to messages to include about them, in rule
+I201 (see below). Whilst it can be passed on the commandline, it's much easier
+to configure it in your config file, such as ``setup.cfg`` - for example:
+
+.. code-block:: ini
+
+    [flake8]
+    banned-modules = mock = Use unittest.mock!
+                     urlparse = Use six.moves.urllib.parse!
 
 Rules
 -----
 
-Currently only one rule is implemented.
+Currently this plugin has two rules.
 
 I200: Unnecessary import alias
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,3 +67,19 @@ current), for example:
 
     $ flake8 file.py
     file.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.
+
+I201: Banned module 'foo' imported
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Complains about importing of banned modules. This might be useful when
+refactoring code, for example when moving from Python 2 to 3. By default there
+are no modules banned - you should configure them with ``banned-modules`` as
+described above in 'Options'.
+
+The message includes a user-defined part that comes from the configuration. For
+example:
+
+.. code-block:: sh
+
+    $ flake8 file.py
+    file.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead.

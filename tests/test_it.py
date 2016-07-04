@@ -218,3 +218,31 @@ def test_I201_from_mock_import():
     assert errors == [
         "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
     ]
+
+
+def test_I201_from_unittest_import_mock():
+    errors = run_flake8(
+        """
+        from unittest import mock
+
+        mock
+        """,
+        ['--banned-modules', 'unittest.mock = Actually use mock']
+    )
+    assert errors == [
+        "example.py:1:1: I201 Banned module 'unittest.mock' imported - Actually use mock."
+    ]
+
+
+def test_I201_from_unittest_import_mock_as():
+    errors = run_flake8(
+        """
+        from unittest import mock as mack
+
+        mack
+        """,
+        ['--banned-modules', 'unittest.mock = Actually use mock']
+    )
+    assert errors == [
+        "example.py:1:1: I201 Banned module 'unittest.mock' imported - Actually use mock."
+    ]

@@ -95,6 +95,8 @@ class ImportChecker(object):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
             module_names = [node.module]
+            for alias in node.names:
+                module_names.append('{}.{}'.format(node.module, alias.name))
         else:
             return
 

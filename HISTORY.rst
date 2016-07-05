@@ -7,7 +7,7 @@ Pending Release
 
 * New release notes here
 
-1.0.1 (2016-07-04)
+1.0.2 (2016-07-04)
 ------------------
 
 * Fixed ``I201`` rule to detect banned imports like ``from x import y``.

@@ -8,7 +8,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
 
-from flake8.main import main as flake8_main
+from flake8.main.cli import main as flake8_main  # flake8 3+
 
 from .utils import captured_stdout
 
@@ -93,7 +93,7 @@ def test_I200_fail_1():
         bar
     """)
     assert errors == [
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
     ]
 
 
@@ -104,7 +104,7 @@ def test_I200_fail_2():
         foo
     """)
     assert errors == [
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'import foo'.",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'import foo'.",
     ]
 
 
@@ -116,9 +116,9 @@ def test_I200_fail_3():
         bar
     """)
     assert set(errors) == {
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'import foo'.",
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'import bar'.",
-        "example.py:1:18: E401 multiple imports on one line",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'import foo'.",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'import bar'.",
+        "example.py:1:17: E401 multiple imports on one line",
     }
 
 
@@ -139,7 +139,7 @@ def test_I200_from_fail_1():
     """)
 
     assert errors == [
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
     ]
 
 
@@ -151,8 +151,8 @@ def test_I200_from_fail_2():
         baz
     """)
     assert set(errors) == {
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import baz'.",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
+        "example.py:1:0: I200 Unnecessary import alias - rewrite as 'from foo import baz'.",
     }
 
 
@@ -169,7 +169,7 @@ def test_I201_import_mock():
         ['--banned-modules', 'mock = Use unittest.mock instead']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        "example.py:1:0: I201 Banned module 'mock' imported - Use unittest.mock instead."
     ]
 
 
@@ -184,8 +184,8 @@ def test_I201_import_mock_and_others():
         ['--banned-modules', 'mock = Use unittest.mock instead']
     )
     assert set(errors) == {
-        'example.py:1:11: E401 multiple imports on one line',
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        'example.py:1:10: E401 multiple imports on one line',
+        "example.py:1:0: I201 Banned module 'mock' imported - Use unittest.mock instead."
     }
 
 
@@ -200,9 +200,9 @@ def test_I201_import_mock_and_others_all_banned():
         ['--banned-modules', 'mock = foo\nast = bar']
     )
     assert set(errors) == {
-        'example.py:1:11: E401 multiple imports on one line',
-        "example.py:1:1: I201 Banned module 'mock' imported - foo.",
-        "example.py:1:1: I201 Banned module 'ast' imported - bar.",
+        'example.py:1:10: E401 multiple imports on one line',
+        "example.py:1:0: I201 Banned module 'mock' imported - foo.",
+        "example.py:1:0: I201 Banned module 'ast' imported - bar.",
     }
 
 
@@ -216,7 +216,7 @@ def test_I201_from_mock_import():
         ['--banned-modules', 'mock = Use unittest.mock instead']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        "example.py:1:0: I201 Banned module 'mock' imported - Use unittest.mock instead."
     ]
 
 
@@ -230,7 +230,7 @@ def test_I201_from_unittest_import_mock():
         ['--banned-modules', 'unittest.mock = Actually use mock']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'unittest.mock' imported - Actually use mock."
+        "example.py:1:0: I201 Banned module 'unittest.mock' imported - Actually use mock."
     ]
 
 
@@ -244,5 +244,5 @@ def test_I201_from_unittest_import_mock_as():
         ['--banned-modules', 'unittest.mock = Actually use mock']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'unittest.mock' imported - Actually use mock."
+        "example.py:1:0: I201 Banned module 'unittest.mock' imported - Actually use mock."
     ]

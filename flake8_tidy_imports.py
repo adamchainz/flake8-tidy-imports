@@ -23,7 +23,7 @@ class ImportChecker(object):
         parser.add_option(
             '--banned-modules', default='', action='store',
             help="A map of modules to ban to the error messages to display "
-                 "in the error."
+                 "in the error.", parse_from_config=True
         )
 
         if hasattr(parser, 'config_options'):  # for flake8 < 3.0

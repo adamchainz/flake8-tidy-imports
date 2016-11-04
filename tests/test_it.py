@@ -25,9 +25,13 @@ def teardown_module(module):
     shutil.rmtree(str(TMP_DIR))
 
 
-def run_flake8(file_contents, extra_args=None):
+def run_flake8(file_contents, extra_args=None, settings_contents=None):
     with open(str(TMP_DIR / "example.py"), 'w') as tempf:
         tempf.write(dedent(file_contents).strip() + '\n')
+
+    if settings_contents is not None:
+        with open(str(TMP_DIR / "setup.cfg"), 'w') as tempf:
+            tempf.write(dedent(settings_contents).strip() + '\n')
 
     orig_dir = os.getcwd()
     os.chdir(str(TMP_DIR))
@@ -167,6 +171,23 @@ def test_I201_import_mock():
         mock
         """,
         ['--banned-modules', 'mock = Use unittest.mock instead']
+    )
+    assert errors == [
+        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+    ]
+
+
+def test_I201_import_mock_config():
+    errors = run_flake8(
+        """
+        import mock
+
+        mock
+        """,
+        settings_contents="""
+        [flake8]
+        banned-modules = mock = Use unittest.mock instead
+        """
     )
     assert errors == [
         "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."

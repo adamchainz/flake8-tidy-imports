@@ -6,6 +6,7 @@ Pending Release
 ---------------
 
 * New release notes here
+* Fixed reading config from flake8 3+
 
 1.0.2 (2016-07-04)
 ------------------

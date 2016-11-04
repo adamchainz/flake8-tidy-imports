@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import ast
 
+import flake8
+
 __author__ = 'Adam Johnson'
 __email__ = 'me@adamj.eu'
 __version__ = '1.0.2'
@@ -20,13 +22,20 @@ class ImportChecker(object):
 
     @classmethod
     def add_options(cls, parser):
-        parser.add_option(
-            '--banned-modules', default='', action='store',
-            help="A map of modules to ban to the error messages to display "
-                 "in the error."
-        )
+        kwargs = {
+            'action': 'store',
+            'default': '',
+            'help': """
+                A map of modules to ban to the error messages to display
+                in the error.
+                """,
+        }
+        if flake8.__version__.startswith('3.'):
+            kwargs['parse_from_config'] = True
 
-        if hasattr(parser, 'config_options'):  # for flake8 < 3.0
+        parser.add_option('--banned-modules', **kwargs)
+
+        if flake8.__version__.startswith('2.'):
             parser.config_options.append('banned-modules')
 
     @classmethod

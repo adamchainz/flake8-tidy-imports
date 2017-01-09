@@ -109,6 +109,11 @@ class ImportChecker(object):
         else:
             return
 
+        # Sort from most to least specific paths.
+        module_names.sort(key=len, reverse=True)
+
+        warned = set()
+
         for module_name in module_names:
 
             if module_name in self.banned_modules:
@@ -116,6 +121,12 @@ class ImportChecker(object):
                     name=module_name,
                     msg=self.banned_modules[module_name]
                 )
+                if any(mod.startswith(module_name) for mod in warned):
+                    # Do not show an error for this line if we already showed
+                    # a more specific error.
+                    continue
+                else:
+                    warned.add(module_name)
                 yield (
                     node.lineno,
                     node.col_offset,

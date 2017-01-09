@@ -194,6 +194,28 @@ def test_I201_import_mock_config():
     ]
 
 
+def test_I201_most_specific_imports():
+    errors = run_flake8(
+        """
+        import foo
+        import foo.bar
+        from foo import bar
+
+        [foo, foo.bar, bar]
+        """,
+        settings_contents="""
+        [flake8]
+        banned-modules = foo = Use foo_prime instead
+                         foo.bar = Use foo_prime.bar_rename instead
+        """
+    )
+    assert errors == [
+        "example.py:1:1: I201 Banned module 'foo' imported - Use foo_prime instead.",
+        "example.py:2:1: I201 Banned module 'foo.bar' imported - Use foo_prime.bar_rename instead.",
+        "example.py:3:1: I201 Banned module 'foo.bar' imported - Use foo_prime.bar_rename instead.",
+    ]
+
+
 def test_I201_import_mock_and_others():
     errors = run_flake8(
         """

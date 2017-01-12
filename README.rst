@@ -36,9 +36,12 @@ Options
 ``banned-modules``
 ~~~~~~~~~~~~~~~~~~
 
-An equals-delimited map of modules to messages to include about them, in rule
-I201 (see below). Whilst it can be passed on the commandline, it's much easier
-to configure it in your config file, such as ``setup.cfg`` - for example:
+Config for rule I201 (see below). A map where each line is a banned import
+string, followed by '=', then the message to use when encountering that banned
+import. Note that despite the name, you can ban imported objects too, since the
+syntax is the same, such as ``decimal.Decimal``. Whilst it can be passed on the
+commandline, it's much easier to configure it in your config file, such as
+``setup.cfg`` - for example:
 
 .. code-block:: ini
 

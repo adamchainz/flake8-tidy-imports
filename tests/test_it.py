@@ -170,10 +170,10 @@ def test_I201_import_mock():
 
         mock
         """,
-        ['--banned-modules', 'mock = Use unittest.mock instead']
+        ['--banned-modules', 'mock = use unittest.mock instead']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     ]
 
 
@@ -186,11 +186,11 @@ def test_I201_import_mock_config():
         """,
         settings_contents="""
         [flake8]
-        banned-modules = mock = Use unittest.mock instead
+        banned-modules = mock = use unittest.mock instead
         """
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     ]
 
 
@@ -205,14 +205,14 @@ def test_I201_most_specific_imports():
         """,
         settings_contents="""
         [flake8]
-        banned-modules = foo = Use foo_prime instead
-                         foo.bar = Use foo_prime.bar_rename instead
+        banned-modules = foo = use foo_prime instead
+                         foo.bar = use foo_prime.bar_rename instead
         """
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'foo' imported - Use foo_prime instead.",
-        "example.py:2:1: I201 Banned module 'foo.bar' imported - Use foo_prime.bar_rename instead.",
-        "example.py:3:1: I201 Banned module 'foo.bar' imported - Use foo_prime.bar_rename instead.",
+        "example.py:1:1: I201 Banned import 'foo' used - use foo_prime instead.",
+        "example.py:2:1: I201 Banned import 'foo.bar' used - use foo_prime.bar_rename instead.",
+        "example.py:3:1: I201 Banned import 'foo.bar' used - use foo_prime.bar_rename instead.",
     ]
 
 
@@ -224,11 +224,11 @@ def test_I201_import_mock_and_others():
 
         ast + mock
         """,
-        ['--banned-modules', 'mock = Use unittest.mock instead']
+        ['--banned-modules', 'mock = use unittest.mock instead']
     )
     assert set(errors) == {
         'example.py:1:11: E401 multiple imports on one line',
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     }
 
 
@@ -244,8 +244,8 @@ def test_I201_import_mock_and_others_all_banned():
     )
     assert set(errors) == {
         'example.py:1:11: E401 multiple imports on one line',
-        "example.py:1:1: I201 Banned module 'mock' imported - foo.",
-        "example.py:1:1: I201 Banned module 'ast' imported - bar.",
+        "example.py:1:1: I201 Banned import 'mock' used - foo.",
+        "example.py:1:1: I201 Banned import 'ast' used - bar.",
     }
 
 
@@ -256,10 +256,10 @@ def test_I201_from_mock_import():
 
         Mock
         """,
-        ['--banned-modules', 'mock = Use unittest.mock instead']
+        ['--banned-modules', 'mock = use unittest.mock instead']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead."
+        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     ]
 
 
@@ -270,10 +270,10 @@ def test_I201_from_unittest_import_mock():
 
         mock
         """,
-        ['--banned-modules', 'unittest.mock = Actually use mock']
+        ['--banned-modules', 'unittest.mock = actually use mock']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'unittest.mock' imported - Actually use mock."
+        "example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
     ]
 
 
@@ -284,8 +284,8 @@ def test_I201_from_unittest_import_mock_as():
 
         mack
         """,
-        ['--banned-modules', 'unittest.mock = Actually use mock']
+        ['--banned-modules', 'unittest.mock = actually use mock']
     )
     assert errors == [
-        "example.py:1:1: I201 Banned module 'unittest.mock' imported - Actually use mock."
+        "example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
     ]

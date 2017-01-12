@@ -43,8 +43,8 @@ to configure it in your config file, such as ``setup.cfg`` - for example:
 .. code-block:: ini
 
     [flake8]
-    banned-modules = mock = Use unittest.mock!
-                     urlparse = Use six.moves.urllib.parse!
+    banned-modules = mock = use unittest.mock!
+                     urlparse = use six.moves.urllib.parse!
 
 Rules
 -----
@@ -68,12 +68,12 @@ current), for example:
     $ flake8 file.py
     file.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.
 
-I201: Banned module 'foo' imported
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+I201: Banned import 'foo' used
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Complains about importing of banned modules. This might be useful when
+Complains about importing of banned imports. This might be useful when
 refactoring code, for example when moving from Python 2 to 3. By default there
-are no modules banned - you should configure them with ``banned-modules`` as
+are no imports banned - you should configure them with ``banned-modules`` as
 described above in 'Options'.
 
 The message includes a user-defined part that comes from the configuration. For
@@ -82,4 +82,4 @@ example:
 .. code-block:: sh
 
     $ flake8 file.py
-    file.py:1:1: I201 Banned module 'mock' imported - Use unittest.mock instead.
+    file.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.

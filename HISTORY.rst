@@ -6,6 +6,8 @@ Pending Release
 ---------------
 
 * New release notes here
+* Changed the error message for ``I201`` to be about the banned *import*
+  instead of *module*.
 
 1.0.4 (2017-01-12)
 ------------------

@@ -52,7 +52,7 @@ class ImportChecker(object):
             cls.banned_modules[module] = message
 
     message_I200 = "I200 Unnecessary import alias - rewrite as '{}'."
-    message_I201 = "I201 Banned module '{name}' imported - {msg}."
+    message_I201 = "I201 Banned import '{name}' used - {msg}."
 
     def run(self):
         for node in ast.walk(self.tree):

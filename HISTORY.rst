@@ -8,6 +8,7 @@ Pending Release
 * New release notes here
 * Don't allow installation with Flake8 3.2.0 which doesn't enable the plugin.
   This bug was fixed in Flake8 3.2.1.
+* Use the most specific message available for a banned import.
 
 1.0.3 (2016-11-05)
 ------------------

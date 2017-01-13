@@ -216,6 +216,23 @@ def test_I201_most_specific_imports():
     ]
 
 
+def test_I201_relative_imports():
+    errors = run_flake8(
+        """
+        from . import foo
+        from .. import bar
+
+        foo, bar
+        """,
+        settings_contents="""
+        [flake8]
+        banned-modules = foo = use foo_prime instead
+                         bar = use bar_prime instead
+        """
+    )
+    assert errors == []
+
+
 def test_I201_import_mock_and_others():
     errors = run_flake8(
         """

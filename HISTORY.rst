@@ -6,6 +6,10 @@ Pending Release
 ---------------
 
 * New release notes here
+
+1.0.5 (2017-01-13)
+------------------
+
 * Changed the error message for ``I201`` to be about the banned *import*
   instead of *module*.
 * Fix a bug introduced in 1.0.4 that broke parsing relative imports.

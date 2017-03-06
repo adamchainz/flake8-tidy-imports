@@ -25,10 +25,8 @@ class ImportChecker(object):
         kwargs = {
             'action': 'store',
             'default': '',
-            'help': """
-                A map of modules to ban to the error messages to display
-                in the error.
-                """,
+            'help': "A map of modules to ban to the error messages to "
+                    "display in the error.",
         }
         if flake8.__version__.startswith('3.'):
             kwargs['parse_from_config'] = True

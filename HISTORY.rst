@@ -5,6 +5,7 @@ History
 Pending Release
 ---------------
 
+* Fixed the whitespace in the help message for ``--banned-modules``.
 * New release notes here
 
 1.0.5 (2017-01-13)

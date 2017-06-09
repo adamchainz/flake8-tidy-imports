@@ -39,15 +39,21 @@ Options
 Config for rule I201 (see below). A map where each line is a banned import
 string, followed by '=', then the message to use when encountering that banned
 import. Note that despite the name, you can ban imported objects too, since the
-syntax is the same, such as ``decimal.Decimal``. Whilst it can be passed on the
-commandline, it's much easier to configure it in your config file, such as
-``setup.cfg`` - for example:
+syntax is the same, such as ``decimal.Decimal``. There is also a special
+directive to ban a preselected list of removed/moved modules between Python 2
+and Python 3. It can be turned on by adding ``{python2to3}`` to the list of
+``banned-modules``.
+
+Whilst it can be passed on the commandline, it's much easier to configure it
+in your config file, such as ``setup.cfg``, for example:
 
 .. code-block:: ini
 
     [flake8]
     banned-modules = mock = use unittest.mock!
                      urlparse = use six.moves.urllib.parse!
+                     {python2to3}
+
 
 Rules
 -----

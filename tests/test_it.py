@@ -328,8 +328,8 @@ def test_I203_import_md5():
 
         md5
         """,
-        []
+        ['--banned-modules', '{python2to3}']
     )
     assert errors == [
-        "example.py:1:1: I203 md5 is moved in Python3. hashlib can be used as a drop-in replacement."
+        "example.py:1:1: I201 Banned import 'md5' used - moved in Python 3. hashlib can be used as a drop-in replacement."  # noqa:E501
     ]

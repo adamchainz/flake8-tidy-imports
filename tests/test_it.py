@@ -319,3 +319,17 @@ def test_I201_from_unittest_import_mock_as():
     assert errors == [
         "example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
     ]
+
+
+def test_I203_import_md5():
+    errors = run_flake8(
+        """
+        import md5
+
+        md5
+        """,
+        []
+    )
+    assert errors == [
+        "example.py:1:1: I203 md5 is moved in Python3. hashlib can be used as a drop-in replacement."
+    ]

@@ -321,7 +321,7 @@ def test_I201_from_unittest_import_mock_as():
     ]
 
 
-def test_I203_import_md5():
+def test_I201_python2to3_import_md5():
     errors = run_flake8(
         """
         import md5

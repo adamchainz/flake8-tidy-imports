@@ -176,7 +176,8 @@ class ImportChecker(object):
         'gdbm': 'moved in Python 3. six.moves.dbm_gnu can be used as a drop-in replacement',
         'htmlentitydefs': 'moved in Python 3. six.moves.html_entities can be used as a drop-in replacement',
         'htmllib': 'moved in Python 3. Use six.moves.html_parser instead',
-        'HTMLParser': 'moved in Python 3. six.moves.html_parser can be used as a drop-in replacement',
+        'HTMLParser': 'moved in Python 3. Other than HTMLParserError, six.moves.html_parser can be used as a drop-in replacement',  # noqa:E501
+        'HTMLParser.HTMLParseError': 'Removed in Python 3.5+',
         'httplib': 'moved in Python 3. six.moves.http_client can be used as a drop-in replacement',
         'ihooks': 'removed in Python 3',
         'imageop': 'moved in Python 3. Use PIL/Pillow instead',

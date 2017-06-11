@@ -157,7 +157,6 @@ class ImportChecker(object):
         'cookielib': 'moved in Python 3. six.moves.http_cookiejar can be used as a drop-in replacement',
         'copy_reg': 'moved in Python 3. six.moves.copyreg can be used as a drop-in replacement',
         'cPickle': 'moved in Python 3. six.moves.cPickle can be used as a drop-in replacement',
-        'cProfile': 'moved in Python 3. Use _profile (C) or profile (Python) instead',
         'cStringIO': 'moved in Python 3. io can be used as a drop-in replacement',
         'cStringIO.cStringIO': 'moved in Python 3. io.BytesIO can be used as a drop-in replacement',
         'cStringIO.StringIO': 'moved in Python 3. six.moves.cStringIO can be used as a drop-in replacement',

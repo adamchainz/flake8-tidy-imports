@@ -358,22 +358,8 @@ class ImportChecker(object):
         'urllib2.UnknownHandler': 'moved in Python 3. six.moves.urllib.request.UnknownHandler can be used as a drop-in replacement',  # noqa:E501
         'urllib2.URLError': 'moved in Python 3. six.moves.urllib.error.URLError can be used as a drop-in replacement',
         'urllib2.urlopen': 'moved in Python 3. six.moves.urllib.request.urlopen can be used as a drop-in replacement',
-        'urlparse': 'moved in Python 3. Use six.moves.parse instead',
-        'urlparse.parse_qs': 'moved in Python 3. six.moves.urllib.parse.parse_qs can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.parse_qsl': 'moved in Python 3. six.moves.urllib.parse.parse_qsl can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.ParseResult': 'moved in Python 3. six.moves.urllib.parse.ParseResult can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.SplitResult': 'moved in Python 3. six.moves.urllib.parse.SplitResult can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.urldefrag': 'moved in Python 3. six.moves.urllib.parse.urldefrag can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.urljoin': 'moved in Python 3. six.moves.urllib.parse.urljoin can be used as a drop-in replacement',
-        'urlparse.urlparse': 'moved in Python 3. six.moves.urllib.parse.urlparse can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.urlsplit': 'moved in Python 3. six.moves.urllib.parse.urlsplit can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.urlunparse': 'moved in Python 3. six.moves.urllib.parse.urlunparse can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.urlunsplit': 'moved in Python 3. six.moves.urllib.parse.urlunsplit can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.uses_fragment': 'moved in Python 3. six.moves.urllib.parse.uses_fragment can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.uses_netloc': 'moved in Python 3. six.moves.urllib.parse.uses_netloc can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.uses_params': 'moved in Python 3. six.moves.urllib.parse.uses_params can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.uses_query': 'moved in Python 3. six.moves.urllib.parse.uses_query can be used as a drop-in replacement',  # noqa:E501
-        'urlparse.uses_relative': 'moved in Python 3. six.moves.urllib.parse.uses_relative can be used as a drop-in replacement',  # noqa:E501
+        'urlparse': 'moved in Python 3. six.moves.urllib.parse can be used as a drop-in replacement',
+        'urlparse.scheme_chars': 'moved in Python 3. Use urllib.parse.scheme_chars',
         'user': 'removed in Python 3',
         'UserDict': 'moved in Python 3. Use dict or collections.UserDict/collections.MutableMapping instead',
         'UserDict.UserDict': 'moved in Python 3. six.moves.UserDict can be used as a drop-in replacement',

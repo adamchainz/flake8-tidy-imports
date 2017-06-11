@@ -320,9 +320,16 @@ class ImportChecker(object):
         'urllib.proxy_bypass': 'moved in Python 3. six.moves.urllib.request.proxy_bypass can be used as a drop-in replacement',  # noqa:E501
         'urllib.quote': 'moved in Python 3. six.moves.urllib.parse.quote can be used as a drop-in replacement',
         'urllib.quote_plus': 'moved in Python 3. six.moves.urllib.parse.quote_plus can be used as a drop-in replacement',  # noqa:E501
+        'urllib.splitattr': 'moved in Python 3. Use urllib.parse.splitattr instead',
+        'urllib.splithost': 'moved in Python 3. Use urllib.parse.splithost instead',
+        'urllib.splitnport': 'moved in Python 3. Use urllib.parse.splitnport instead',
+        'urllib.splitpasswd': 'moved in Python 3. Use urllib.parse.splitpasswd instead',
+        'urllib.splitport': 'moved in Python 3. Use urllib.parse.splitport instead',
         'urllib.splitquery': 'moved in Python 3. six.moves.urllib.parse.splitquery can be used as a drop-in replacement',  # noqa:E501
         'urllib.splittag': 'moved in Python 3. six.moves.urllib.parse.splittag can be used as a drop-in replacement',
+        'urllib.splittype': 'moved in Python 3. Use urllib.parse.splittype instead',
         'urllib.splituser': 'moved in Python 3. six.moves.urllib.parse.splituser can be used as a drop-in replacement',  # noqa:E501
+        'urllib.splitvalue': 'moved in Python 3. Use urllib.parse.splitvalue instead',
         'urllib.unquote': 'moved in Python 3. six.moves.urllib.parse.unquote can be used as a drop-in replacement',
         'urllib.unquote_plus': 'moved in Python 3. six.moves.urllib.parse.unquote_plus can be used as a drop-in replacement',  # noqa:E501
         'urllib.url2pathname': 'moved in Python 3. six.moves.urllib.request.url2pathname can be used as a drop-in replacement',  # noqa:E501
@@ -354,8 +361,10 @@ class ImportChecker(object):
         'urllib2.ProxyBasicAuthHandler': 'moved in Python 3. six.moves.urllib.request.ProxyBasicAuthHandler can be used as a drop-in replacement',  # noqa:E501
         'urllib2.ProxyDigestAuthHandler': 'moved in Python 3. six.moves.urllib.request.ProxyDigestAuthHandler can be used as a drop-in replacement',  # noqa:E501
         'urllib2.ProxyHandler': 'moved in Python 3. six.moves.urllib.request.ProxyHandler can be used as a drop-in replacement',  # noqa:E501
+        'urllib2.quote': 'moved in Python 3. six.moves.urllib.parse.quote can be used as a drop-in replacement',
         'urllib2.Request': 'moved in Python 3. six.moves.urllib.request.Request can be used as a drop-in replacement',
         'urllib2.UnknownHandler': 'moved in Python 3. six.moves.urllib.request.UnknownHandler can be used as a drop-in replacement',  # noqa:E501
+        'urllib2.unquote': 'moved in Python 3. six.moves.urllib.parse.unquote can be used as a drop-in replacement',
         'urllib2.URLError': 'moved in Python 3. six.moves.urllib.error.URLError can be used as a drop-in replacement',
         'urllib2.urlopen': 'moved in Python 3. six.moves.urllib.request.urlopen can be used as a drop-in replacement',
         'urlparse': 'moved in Python 3. six.moves.urllib.parse can be used as a drop-in replacement',

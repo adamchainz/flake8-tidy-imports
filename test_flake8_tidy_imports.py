@@ -277,5 +277,5 @@ def test_I201_python2to3_import_md5(flake8dir):
         extra_args=['--banned-modules', '{python2to3}']
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'md5' used - moved in Python 3. hashlib can be used as a drop-in replacement."  # noqa:E501
+        "./example.py:1:1: I201 Banned import 'md5' used - removed in Python 3, use hashlib.md5() instead."
     ]

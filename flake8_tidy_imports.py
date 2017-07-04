@@ -56,10 +56,10 @@ class ImportChecker(object):
     message_I201 = "I201 Banned import '{name}' used - {msg}."
 
     def run(self):
+        rule_funcs = (self.rule_I200, self.rule_I201)
         for node in ast.walk(self.tree):
-
-            for rule in ('I200', 'I201'):
-                for err in getattr(self, 'rule_{}'.format(rule))(node):
+            for rule_func in rule_funcs:
+                for err in rule_func(node):
                     yield err
 
     def rule_I200(self, node):

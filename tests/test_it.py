@@ -63,273 +63,278 @@ def run_flake8(file_contents, extra_args=None, settings_contents=None):
 # I200
 
 
-def test_I200_pass_1():
-    errors = run_flake8("""
+def test_I200_pass_1(flake8dir):
+    flake8dir.make_example_py("""
         import foo
 
         foo
     """)
-    assert errors == []
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
 
 
-def test_I200_pass_2():
-    errors = run_flake8("""
+def test_I200_pass_2(flake8dir):
+    flake8dir.make_example_py("""
         import foo as foo2
 
         foo2
     """)
-    assert errors == []
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
 
 
-def test_I200_pass_3():
-    errors = run_flake8("""
+def test_I200_pass_3(flake8dir):
+    flake8dir.make_example_py("""
         import os.path as path2
 
         path2
     """)
-    assert errors == []
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
 
 
-def test_I200_fail_1():
-    errors = run_flake8("""
+def test_I200_fail_1(flake8dir):
+    flake8dir.make_example_py("""
         import foo.bar as bar
 
         bar
     """)
-    assert errors == [
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
+    result = flake8dir.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
     ]
 
 
-def test_I200_fail_2():
-    errors = run_flake8("""
+def test_I200_fail_2(flake8dir):
+    flake8dir.make_example_py("""
         import foo as foo
 
         foo
     """)
-    assert errors == [
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'import foo'.",
+    result = flake8dir.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'import foo'.",
     ]
 
 
-def test_I200_fail_3():
-    errors = run_flake8("""
+def test_I200_fail_3(flake8dir):
+    flake8dir.make_example_py("""
         import foo as foo, bar as bar
 
         foo
         bar
     """)
-    assert set(errors) == {
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'import foo'.",
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'import bar'.",
-        "example.py:1:18: E401 multiple imports on one line",
+    result = flake8dir.run_flake8()
+    assert set(result.out_lines) == {
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'import foo'.",
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'import bar'.",
+        "./example.py:1:18: E401 multiple imports on one line",
     }
 
 
-def test_I200_from_success_1():
-    errors = run_flake8("""
+def test_I200_from_success_1(flake8dir):
+    flake8dir.make_example_py("""
         from foo import bar as bar2
 
         bar2
     """)
-    assert errors == []
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
 
 
-def test_I200_from_fail_1():
-    errors = run_flake8("""
+def test_I200_from_fail_1(flake8dir):
+    flake8dir.make_example_py("""
         from foo import bar as bar
 
         bar
     """)
+    result = flake8dir.run_flake8()
 
-    assert errors == [
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
+    assert result.out_lines == [
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
     ]
 
 
-def test_I200_from_fail_2():
-    errors = run_flake8("""
+def test_I200_from_fail_2(flake8dir):
+    flake8dir.make_example_py("""
         from foo import bar as bar, baz as baz
 
         bar
         baz
     """)
-    assert set(errors) == {
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
-        "example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import baz'.",
+    result = flake8dir.run_flake8()
+    assert set(result.out_lines) == {
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.",
+        "./example.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import baz'.",
     }
 
 
 # I201
 
 
-def test_I201_import_mock():
-    errors = run_flake8(
-        """
+def test_I201_import_mock(flake8dir):
+    flake8dir.make_example_py("""
         import mock
 
         mock
-        """,
-        ['--banned-modules', 'mock = use unittest.mock instead']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', 'mock = use unittest.mock instead']
     )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     ]
 
 
-def test_I201_import_mock_config():
-    errors = run_flake8(
-        """
+def test_I201_import_mock_config(flake8dir):
+    flake8dir.make_example_py("""
         import mock
 
         mock
-        """,
-        settings_contents="""
+    """)
+    flake8dir.make_setup_cfg("""
         [flake8]
         banned-modules = mock = use unittest.mock instead
-        """
-    )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+    """)
+    result = flake8dir.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     ]
 
 
-def test_I201_most_specific_imports():
-    errors = run_flake8(
-        """
+def test_I201_most_specific_imports(flake8dir):
+    flake8dir.make_example_py("""
         import foo
         import foo.bar
         from foo import bar
 
         [foo, foo.bar, bar]
-        """,
-        settings_contents="""
+    """)
+    flake8dir.make_setup_cfg("""
         [flake8]
         banned-modules = foo = use foo_prime instead
                          foo.bar = use foo_prime.bar_rename instead
-        """
-    )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'foo' used - use foo_prime instead.",
-        "example.py:2:1: I201 Banned import 'foo.bar' used - use foo_prime.bar_rename instead.",
-        "example.py:3:1: I201 Banned import 'foo.bar' used - use foo_prime.bar_rename instead.",
+    """)
+    result = flake8dir.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'foo' used - use foo_prime instead.",
+        "./example.py:2:1: I201 Banned import 'foo.bar' used - use foo_prime.bar_rename instead.",
+        "./example.py:3:1: I201 Banned import 'foo.bar' used - use foo_prime.bar_rename instead.",
     ]
 
 
-def test_I201_relative_import():
-    errors = run_flake8(
-        """
+def test_I201_relative_import(flake8dir):
+    flake8dir.make_example_py("""
         from . import foo
 
         foo
-        """,
-        settings_contents="""
+    """)
+    flake8dir.make_setup_cfg("""
         [flake8]
         banned-modules = bar = use bar_prime instead
-        """
-    )
-    assert errors == []
+    """)
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
 
 
-def test_I201_relative_import_2():
-    errors = run_flake8(
-        """
+def test_I201_relative_import_2(flake8dir):
+    flake8dir.make_example_py("""
         from .. import bar
 
         bar
-        """,
-        settings_contents="""
+    """)
+    flake8dir.make_setup_cfg("""
         [flake8]
         banned-modules = bar = use bar_prime instead
-        """
-    )
-    assert errors == []
+    """)
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
 
 
-def test_I201_import_mock_and_others():
-    errors = run_flake8(
-        """
+def test_I201_import_mock_and_others(flake8dir):
+    flake8dir.make_example_py("""
         import ast, mock
 
 
         ast + mock
-        """,
-        ['--banned-modules', 'mock = use unittest.mock instead']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', 'mock = use unittest.mock instead']
     )
-    assert set(errors) == {
-        'example.py:1:11: E401 multiple imports on one line',
-        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+    assert set(result.out_lines) == {
+        './example.py:1:11: E401 multiple imports on one line',
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     }
 
 
-def test_I201_import_mock_and_others_all_banned():
-    errors = run_flake8(
-        """
+def test_I201_import_mock_and_others_all_banned(flake8dir):
+    flake8dir.make_example_py("""
         import ast, mock
 
 
         ast + mock
-        """,
-        ['--banned-modules', 'mock = foo\nast = bar']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', 'mock = foo\nast = bar']
     )
-    assert set(errors) == {
-        'example.py:1:11: E401 multiple imports on one line',
-        "example.py:1:1: I201 Banned import 'mock' used - foo.",
-        "example.py:1:1: I201 Banned import 'ast' used - bar.",
+    assert set(result.out_lines) == {
+        './example.py:1:11: E401 multiple imports on one line',
+        "./example.py:1:1: I201 Banned import 'mock' used - foo.",
+        "./example.py:1:1: I201 Banned import 'ast' used - bar.",
     }
 
 
-def test_I201_from_mock_import():
-    errors = run_flake8(
-        """
+def test_I201_from_mock_import(flake8dir):
+    flake8dir.make_example_py("""
         from mock import Mock
 
         Mock
-        """,
-        ['--banned-modules', 'mock = use unittest.mock instead']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', 'mock = use unittest.mock instead']
     )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
     ]
 
 
-def test_I201_from_unittest_import_mock():
-    errors = run_flake8(
-        """
+def test_I201_from_unittest_import_mock(flake8dir):
+    flake8dir.make_example_py("""
         from unittest import mock
 
         mock
-        """,
-        ['--banned-modules', 'unittest.mock = actually use mock']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', 'unittest.mock = actually use mock']
     )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
     ]
 
 
-def test_I201_from_unittest_import_mock_as():
-    errors = run_flake8(
-        """
+def test_I201_from_unittest_import_mock_as(flake8dir):
+    flake8dir.make_example_py("""
         from unittest import mock as mack
 
         mack
-        """,
-        ['--banned-modules', 'unittest.mock = actually use mock']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', 'unittest.mock = actually use mock']
     )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
     ]
 
 
-def test_I201_python2to3_import_md5():
-    errors = run_flake8(
-        """
+def test_I201_python2to3_import_md5(flake8dir):
+    flake8dir.make_example_py("""
         import md5
 
         md5
-        """,
-        ['--banned-modules', '{python2to3}']
+    """)
+    result = flake8dir.run_flake8(
+        extra_args=['--banned-modules', '{python2to3}']
     )
-    assert errors == [
-        "example.py:1:1: I201 Banned import 'md5' used - moved in Python 3. hashlib can be used as a drop-in replacement."  # noqa:E501
+    assert result.out_lines == [
+        "./example.py:1:1: I201 Banned import 'md5' used - moved in Python 3. hashlib can be used as a drop-in replacement."  # noqa:E501
     ]

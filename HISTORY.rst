@@ -6,6 +6,10 @@ Pending Release
 ---------------
 
 * New release notes here
+
+1.1.0 (2017-07-10)
+------------------
+
 * Added a big list of python 2 to 3 import bans for I201, which can be
   activated by adding ``{python2to3}`` to the ``banned-modules`` option.
 

@@ -1,65 +1,6 @@
 # -*- encoding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
-import shutil
-import sys
-from pathlib import Path
-from tempfile import mkdtemp
-from textwrap import dedent
-
-from flake8.main.cli import main as flake8_main  # flake8 3+
-
-from .utils import captured_stdout
-
-MODULE_DIR = Path(__file__).parent.resolve()
-TMP_DIR = None
-
-
-def setup_module(module):
-    global TMP_DIR
-    TMP_DIR = Path(mkdtemp())
-
-
-def teardown_module(module):
-    shutil.rmtree(str(TMP_DIR))
-
-
-def run_flake8(file_contents, extra_args=None, settings_contents=None):
-    with open(str(TMP_DIR / "example.py"), 'w') as tempf:
-        tempf.write(dedent(file_contents).strip() + '\n')
-
-    if settings_contents is not None:
-        with open(str(TMP_DIR / "setup.cfg"), 'w') as tempf:
-            tempf.write(dedent(settings_contents).strip() + '\n')
-
-    orig_dir = os.getcwd()
-    os.chdir(str(TMP_DIR))
-    orig_args = sys.argv
-    try:
-        # Can't pass args to flake8 but can set to sys.argv
-        sys.argv = [
-            'flake8',
-            '--jobs', '1',
-            '--exit-zero',
-            'example.py',
-        ]
-        if extra_args:
-            sys.argv.extend(extra_args)
-
-        # Run it
-        with captured_stdout() as stdout:
-            flake8_main()
-        out = stdout.getvalue().strip()
-        lines = out.split('\n')
-        if lines[-1] == '':
-            lines = lines[:-1]
-        return lines
-    finally:
-        sys.argv = orig_args
-        os.chdir(orig_dir)
-
-
 # I200
 
 

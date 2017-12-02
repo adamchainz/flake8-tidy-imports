@@ -45,6 +45,7 @@ setup(
     keywords='flake8_tidy_imports',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
+        'Framework :: Flake8',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: ISC License (ISCL)',
         'Natural Language :: English',

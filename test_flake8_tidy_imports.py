@@ -120,10 +120,10 @@ def test_I201_import_mock(flake8dir):
         mock
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', 'mock = use unittest.mock instead']
+        extra_args=['--banned-modules', 'mock = use unittest.mock instead'],
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.",
     ]
 
 
@@ -139,7 +139,7 @@ def test_I201_import_mock_config(flake8dir):
     """)
     result = flake8dir.run_flake8()
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.",
     ]
 
 
@@ -200,11 +200,11 @@ def test_I201_import_mock_and_others(flake8dir):
         ast + mock
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', 'mock = use unittest.mock instead']
+        extra_args=['--banned-modules', 'mock = use unittest.mock instead'],
     )
     assert set(result.out_lines) == {
         './example.py:1:11: E401 multiple imports on one line',
-        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.",
     }
 
 
@@ -216,7 +216,7 @@ def test_I201_import_mock_and_others_all_banned(flake8dir):
         ast + mock
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', 'mock = foo\nast = bar']
+        extra_args=['--banned-modules', 'mock = foo\nast = bar'],
     )
     assert set(result.out_lines) == {
         './example.py:1:11: E401 multiple imports on one line',
@@ -232,10 +232,10 @@ def test_I201_from_mock_import(flake8dir):
         Mock
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', 'mock = use unittest.mock instead']
+        extra_args=['--banned-modules', 'mock = use unittest.mock instead'],
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead."
+        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.",
     ]
 
 
@@ -246,10 +246,10 @@ def test_I201_from_unittest_import_mock(flake8dir):
         mock
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', 'unittest.mock = actually use mock']
+        extra_args=['--banned-modules', 'unittest.mock = actually use mock'],
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
+        "./example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock.",
     ]
 
 
@@ -260,10 +260,10 @@ def test_I201_from_unittest_import_mock_as(flake8dir):
         mack
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', 'unittest.mock = actually use mock']
+        extra_args=['--banned-modules', 'unittest.mock = actually use mock'],
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock."
+        "./example.py:1:1: I201 Banned import 'unittest.mock' used - actually use mock.",
     ]
 
 
@@ -274,8 +274,8 @@ def test_I201_python2to3_import_md5(flake8dir):
         md5
     """)
     result = flake8dir.run_flake8(
-        extra_args=['--banned-modules', '{python2to3}']
+        extra_args=['--banned-modules', '{python2to3}'],
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'md5' used - removed in Python 3, use hashlib.md5() instead."
+        "./example.py:1:1: I201 Banned import 'md5' used - removed in Python 3, use hashlib.md5() instead.",
     ]

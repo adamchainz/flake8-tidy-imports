@@ -76,7 +76,7 @@ class ImportChecker(object):
 
                     if from_name:
                         rewritten = 'from {} import {}'.format(
-                            from_name, imported_name
+                            from_name, imported_name,
                         )
                     else:
                         rewritten = 'import {}'.format(imported_name)
@@ -85,7 +85,7 @@ class ImportChecker(object):
                         node.lineno,
                         node.col_offset,
                         self.message_I200.format(rewritten),
-                        type(self)
+                        type(self),
                     )
         elif isinstance(node, ast.ImportFrom):
             for alias in node.names:
@@ -97,7 +97,7 @@ class ImportChecker(object):
                         node.lineno,
                         node.col_offset,
                         self.message_I200.format(rewritten),
-                        type(self)
+                        type(self),
                     )
 
     def rule_I201(self, node):
@@ -121,7 +121,7 @@ class ImportChecker(object):
             if module_name in self.banned_modules:
                 message = self.message_I201.format(
                     name=module_name,
-                    msg=self.banned_modules[module_name]
+                    msg=self.banned_modules[module_name],
                 )
                 if any(mod.startswith(module_name) for mod in warned):
                     # Do not show an error for this line if we already showed
@@ -133,7 +133,7 @@ class ImportChecker(object):
                     node.lineno,
                     node.col_offset,
                     message,
-                    type(self)
+                    type(self),
                 )
 
     python2to3_banned_modules = {

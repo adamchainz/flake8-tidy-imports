@@ -123,7 +123,7 @@ def test_I251_import_mock(flake8dir):
         extra_args=['--banned-modules', 'mock = use unittest.mock instead'],
     )
     assert result.out_lines == [
-        "./example.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.",
+        "./example.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead.",
     ]
 
 

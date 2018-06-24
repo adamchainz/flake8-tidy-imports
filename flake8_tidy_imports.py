@@ -52,17 +52,17 @@ class ImportChecker(object):
             message = message.strip()
             cls.banned_modules[module] = message
 
-    message_I200 = "I200 Unnecessary import alias - rewrite as '{}'."
-    message_I201 = "I201 Banned import '{name}' used - {msg}."
+    message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
+    message_I251 = "I251 Banned import '{name}' used - {msg}."
 
     def run(self):
-        rule_funcs = (self.rule_I200, self.rule_I201)
+        rule_funcs = (self.rule_I250, self.rule_I251)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
                 for err in rule_func(node):
                     yield err
 
-    def rule_I200(self, node):
+    def rule_I250(self, node):
         if isinstance(node, ast.Import):
             for alias in node.names:
 
@@ -84,7 +84,7 @@ class ImportChecker(object):
                     yield (
                         node.lineno,
                         node.col_offset,
-                        self.message_I200.format(rewritten),
+                        self.message_I250.format(rewritten),
                         type(self),
                     )
         elif isinstance(node, ast.ImportFrom):
@@ -96,11 +96,11 @@ class ImportChecker(object):
                     yield (
                         node.lineno,
                         node.col_offset,
-                        self.message_I200.format(rewritten),
+                        self.message_I250.format(rewritten),
                         type(self),
                     )
 
-    def rule_I201(self, node):
+    def rule_I251(self, node):
         if isinstance(node, ast.Import):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
@@ -119,7 +119,7 @@ class ImportChecker(object):
         for module_name in module_names:
 
             if module_name in self.banned_modules:
-                message = self.message_I201.format(
+                message = self.message_I251.format(
                     name=module_name,
                     msg=self.banned_modules[module_name],
                 )

@@ -11,8 +11,6 @@ Flake8 Tidy Imports
 A `flake8 <https://flake8.readthedocs.io/en/latest/index.html>`_ plugin that
 helps you write tidier imports.
 
-* Free software: ISC license
-
 Installation
 ------------
 
@@ -22,8 +20,10 @@ Install from ``pip`` with:
 
      pip install flake8-tidy-imports
 
-It will then automatically be run as part of ``flake8``; you can check it has
-been picked up with:
+Python 3.4+ supported.
+
+When installed it will automatically be run as part of ``flake8``; you can
+check it is being picked up with:
 
 .. code-block:: sh
 

@@ -59,6 +59,16 @@ configure it in your config file, such as ``setup.cfg``, for example:
                      urlparse = use six.moves.urllib.parse!
                      {python2to3}
 
+``ban-relative-imports``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Enables rule I202, which bans relative imports. See below.
+
+.. code-block:: ini
+
+    [flake8]
+    ban-relative-imports = true
+
 
 Rules
 -----
@@ -97,3 +107,13 @@ example:
 
     $ flake8 file.py
     file.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.
+
+I202: Relative imports are banned.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Complains about use of relative imports:
+
+* ``from . import foo``
+* ``from .bar import foo``
+
+Needs enabling with ``ban-relative-imports`` configuration option.

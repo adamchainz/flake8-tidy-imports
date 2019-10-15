@@ -65,7 +65,7 @@ class ImportChecker(object):
 
     message_I200 = "I200 Unnecessary import alias - rewrite as '{}'."
     message_I201 = "I201 Banned import '{name}' used - {msg}."
-    message_I202 = "I202 Relative import found."
+    message_I202 = "I202 Relative imports are banned."
 
     def run(self):
         rule_funcs = (self.rule_I200, self.rule_I201, self.rule_I202)

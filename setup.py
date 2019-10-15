@@ -34,7 +34,7 @@ setup(
     entry_points={"flake8.extension": ["I20 = " "flake8_tidy_imports:ImportChecker"]},
     py_modules=["flake8_tidy_imports"],
     include_package_data=True,
-    install_requires=["flake8!=3.2.0"],
+    install_requires=["flake8>=3.0,!=3.2.0"],
     python_requires=">=3.5",
     license="ISCL",
     zip_safe=False,

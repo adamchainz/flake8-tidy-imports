@@ -7,6 +7,9 @@ Pending Release
 
 .. Insert new release notes below this line
 
+3.0.0 (2019-10-15)
+------------------
+
 * Add rule ``I202`` to ban relative imports, when activated with the new
   ``ban-relative-imports`` configuration option.
 * Update Python support to 3.5-3.7, as 3.4 has reached its end of life.

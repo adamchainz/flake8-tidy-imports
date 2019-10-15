@@ -346,6 +346,18 @@ def test_I201_python2to3_import_md5(flake8dir):
 # I202
 
 
+def test_I202_not_activated(flake8dir):
+    flake8dir.make_example_py(
+        """
+        from . import foo
+
+        foo
+        """
+    )
+    result = flake8dir.run_flake8()
+    assert result.out_lines == []
+
+
 def test_I202_relative_import(flake8dir):
     flake8dir.make_example_py(
         """
@@ -361,7 +373,7 @@ def test_I202_relative_import(flake8dir):
         """
     )
     result = flake8dir.run_flake8()
-    assert result.out_lines == ["./example.py:1:1: I202 Relative import found."]
+    assert result.out_lines == ["./example.py:1:1: I202 Relative imports are banned."]
 
 
 def test_I202_relative_import_2(flake8dir):
@@ -379,4 +391,4 @@ def test_I202_relative_import_2(flake8dir):
         """
     )
     result = flake8dir.run_flake8()
-    assert result.out_lines == ["./example.py:1:1: I202 Relative import found."]
+    assert result.out_lines == ["./example.py:1:1: I202 Relative imports are banned."]

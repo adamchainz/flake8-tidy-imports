@@ -341,3 +341,42 @@ def test_I201_python2to3_import_md5(flake8dir):
         "./example.py:1:1: I201 Banned import 'md5' used - removed in Python "
         + "3, use hashlib.md5() instead."
     ]
+
+
+# I202
+
+
+def test_I202_relative_import(flake8dir):
+    flake8dir.make_example_py(
+        """
+        from . import foo
+
+        foo
+        """
+    )
+    flake8dir.make_setup_cfg(
+        """
+        [flake8]
+        ban-relative-imports = true
+        """
+    )
+    result = flake8dir.run_flake8()
+    assert result.out_lines == ["./example.py:1:1: I202 Relative import found."]
+
+
+def test_I202_relative_import_2(flake8dir):
+    flake8dir.make_example_py(
+        """
+        from .. import bar
+
+        bar
+        """
+    )
+    flake8dir.make_setup_cfg(
+        """
+        [flake8]
+        ban-relative-imports = true
+        """
+    )
+    result = flake8dir.run_flake8()
+    assert result.out_lines == ["./example.py:1:1: I202 Relative import found."]

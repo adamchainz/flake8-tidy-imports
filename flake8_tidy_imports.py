@@ -20,19 +20,29 @@ class ImportChecker(object):
 
     @classmethod
     def add_options(cls, parser):
-        kwargs = {
+        banned_modules_kwargs = {
             "action": "store",
             "default": "",
             "help": "A map of modules to ban to the error messages to "
             "display in the error.",
         }
-        if flake8.__version__.startswith("3."):
-            kwargs["parse_from_config"] = True
 
-        parser.add_option("--banned-modules", **kwargs)
+        relative_import_kwargs = {
+            "action": "store_true",
+            "default": False,
+            "help": "Ban relative imports (use absolute imports instead).",
+        }
+
+        if flake8.__version__.startswith("3."):
+            banned_modules_kwargs["parse_from_config"] = True
+            relative_import_kwargs["parse_from_config"] = True
+
+        parser.add_option("--banned-modules", **banned_modules_kwargs)
+        parser.add_option("--ban-relative-imports", **relative_import_kwargs)
 
         if flake8.__version__.startswith("2."):
             parser.config_options.append("banned-modules")
+            parser.config_options.append("ban-relative-imports")
 
     @classmethod
     def parse_options(cls, options):
@@ -51,11 +61,14 @@ class ImportChecker(object):
             message = message.strip()
             cls.banned_modules[module] = message
 
+        cls.ban_relative_imports = options.ban_relative_imports
+
     message_I200 = "I200 Unnecessary import alias - rewrite as '{}'."
     message_I201 = "I201 Banned import '{name}' used - {msg}."
+    message_I202 = "I202 Relative import found."
 
     def run(self):
-        rule_funcs = (self.rule_I200, self.rule_I201)
+        rule_funcs = (self.rule_I200, self.rule_I201, self.rule_I202)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
                 for err in rule_func(node):
@@ -126,6 +139,14 @@ class ImportChecker(object):
                 else:
                     warned.add(module_name)
                 yield (node.lineno, node.col_offset, message, type(self))
+
+    def rule_I202(self, node):
+        if (
+            self.ban_relative_imports
+            and isinstance(node, ast.ImportFrom)
+            and node.level != 0
+        ):
+            yield (node.lineno, node.col_offset, self.message_I202, type(self))
 
     python2to3_banned_modules = {
         "__builtin__": "use six.moves.builtins as a drop-in replacement",

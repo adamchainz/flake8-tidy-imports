@@ -392,3 +392,21 @@ def test_I202_relative_import_2(flake8dir):
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I202 Relative imports are banned."]
+
+
+def test_I202_relative_import_3(flake8dir):
+    flake8dir.make_example_py(
+        """
+        from .foo import bar
+
+        bar
+        """
+    )
+    flake8dir.make_setup_cfg(
+        """
+        [flake8]
+        ban-relative-imports = true
+        """
+    )
+    result = flake8dir.run_flake8()
+    assert result.out_lines == ["./example.py:1:1: I202 Relative imports are banned."]

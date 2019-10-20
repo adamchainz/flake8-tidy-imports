@@ -1,8 +1,7 @@
 import ast
 
-__author__ = "Adam Johnson"
-__email__ = "me@adamj.eu"
-__version__ = "3.0.0"
+import pkg_resources
+from cached_property import cached_property
 
 
 class ImportChecker(object):
@@ -11,7 +10,10 @@ class ImportChecker(object):
     """
 
     name = "flake8-tidy-imports"
-    version = __version__
+
+    @cached_property
+    def version(self):
+        return pkg_resources.get_distribution("flake8-comprehensions").version
 
     def __init__(self, tree, *args, **kwargs):
         self.tree = tree

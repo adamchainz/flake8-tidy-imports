@@ -14,7 +14,7 @@ Pending Release
   (`docs <https://docs.python.org/3.8/library/importlib.metadata.html#distribution-versions>`__ /
   `backport <https://pypi.org/project/importlib-metadata/>`__).
 
-* Add dependencies on ``cached-property`` and ``setuptools``.
+* Add dependencies on ``cached-property`` and ``importlib-metadata``.
 
 3.0.0 (2019-10-15)
 ------------------

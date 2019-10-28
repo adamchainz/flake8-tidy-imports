@@ -8,9 +8,7 @@ else:
 
 def test_version(flake8dir):
     result = flake8dir.run_flake8(["--version"])
-    version_string = (
-        "flake8-tidy-imports: " + version("flake8-tidy-imports")
-    )
+    version_string = "flake8-tidy-imports: " + version("flake8-tidy-imports")
     assert version_string in result.out_lines[0]
 
 

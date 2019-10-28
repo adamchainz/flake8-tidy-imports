@@ -1,3 +1,19 @@
+import sys
+
+if sys.version_info >= (3, 8):
+    from importlib.metadata import version
+else:
+    from importlib_metadata import version
+
+
+def test_version(flake8dir):
+    result = flake8dir.run_flake8(["--version"])
+    version_string = (
+        "flake8-tidy-imports: " + version("flake8-tidy-imports")
+    )
+    assert version_string in result.out_lines[0]
+
+
 # I200
 
 

@@ -66,8 +66,7 @@ class ImportChecker(object):
         rule_funcs = (self.rule_I200, self.rule_I201, self.rule_I202)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
-                for err in rule_func(node):
-                    yield err
+                yield from rule_func(node)
 
     def rule_I200(self, node):
         if isinstance(node, ast.Import):

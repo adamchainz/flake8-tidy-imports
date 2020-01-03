@@ -39,7 +39,7 @@ Options
 ``banned-modules``
 ~~~~~~~~~~~~~~~~~~
 
-Config for rule I201 (see below). A map where each line is a banned import
+Config for rule I251 (see below). A map where each line is a banned import
 string, followed by '=', then the message to use when encountering that banned
 import. Note that despite the name, you can ban imported objects too, since the
 syntax is the same, such as ``decimal.Decimal``.
@@ -62,7 +62,7 @@ configure it in your config file, such as ``setup.cfg``, for example:
 ``ban-relative-imports``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Enables rule I202, which bans relative imports. See below.
+Enables rule I252, which bans relative imports. See below.
 
 .. code-block:: ini
 
@@ -73,7 +73,7 @@ Enables rule I202, which bans relative imports. See below.
 Rules
 -----
 
-I200: Unnecessary import alias
+I250: Unnecessary import alias
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Complains about unnecessary import aliasing of three forms:
@@ -88,9 +88,9 @@ current), for example:
 .. code-block:: sh
 
     $ flake8 file.py
-    file.py:1:1: I200 Unnecessary import alias - rewrite as 'from foo import bar'.
+    file.py:1:1: I250 Unnecessary import alias - rewrite as 'from foo import bar'.
 
-I201: Banned import 'foo' used
+I251: Banned import 'foo' used
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Complains about importing of banned imports. This might be useful when
@@ -104,9 +104,9 @@ example:
 .. code-block:: sh
 
     $ flake8 file.py
-    file.py:1:1: I201 Banned import 'mock' used - use unittest.mock instead.
+    file.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead.
 
-I202: Relative imports are banned.
+I252: Relative imports are banned.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Complains about use of relative imports:

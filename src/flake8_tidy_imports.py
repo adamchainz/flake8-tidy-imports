@@ -58,17 +58,17 @@ class ImportChecker(object):
 
         cls.ban_relative_imports = options.ban_relative_imports
 
-    message_I200 = "I200 Unnecessary import alias - rewrite as '{}'."
-    message_I201 = "I201 Banned import '{name}' used - {msg}."
-    message_I202 = "I202 Relative imports are banned."
+    message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
+    message_I251 = "I251 Banned import '{name}' used - {msg}."
+    message_I252 = "I252 Relative imports are banned."
 
     def run(self):
-        rule_funcs = (self.rule_I200, self.rule_I201, self.rule_I202)
+        rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
                 yield from rule_func(node)
 
-    def rule_I200(self, node):
+    def rule_I250(self, node):
         if isinstance(node, ast.Import):
             for alias in node.names:
 
@@ -88,7 +88,7 @@ class ImportChecker(object):
                     yield (
                         node.lineno,
                         node.col_offset,
-                        self.message_I200.format(rewritten),
+                        self.message_I250.format(rewritten),
                         type(self),
                     )
         elif isinstance(node, ast.ImportFrom):
@@ -100,11 +100,11 @@ class ImportChecker(object):
                     yield (
                         node.lineno,
                         node.col_offset,
-                        self.message_I200.format(rewritten),
+                        self.message_I250.format(rewritten),
                         type(self),
                     )
 
-    def rule_I201(self, node):
+    def rule_I251(self, node):
         if isinstance(node, ast.Import):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
@@ -123,7 +123,7 @@ class ImportChecker(object):
         for module_name in module_names:
 
             if module_name in self.banned_modules:
-                message = self.message_I201.format(
+                message = self.message_I251.format(
                     name=module_name, msg=self.banned_modules[module_name]
                 )
                 if any(mod.startswith(module_name) for mod in warned):
@@ -134,13 +134,13 @@ class ImportChecker(object):
                     warned.add(module_name)
                 yield (node.lineno, node.col_offset, message, type(self))
 
-    def rule_I202(self, node):
+    def rule_I252(self, node):
         if (
             self.ban_relative_imports
             and isinstance(node, ast.ImportFrom)
             and node.level != 0
         ):
-            yield (node.lineno, node.col_offset, self.message_I202, type(self))
+            yield (node.lineno, node.col_offset, self.message_I252, type(self))
 
     python2to3_banned_modules = {
         "__builtin__": "use six.moves.builtins as a drop-in replacement",

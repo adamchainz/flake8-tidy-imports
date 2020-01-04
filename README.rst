@@ -73,6 +73,11 @@ Enables rule I252, which bans relative imports. See below.
 Rules
 -----
 
+**N.B.** Before version 4.0.0, the rule codes were numbered 50 less, e.g. I250
+was I200. They were changed in `Issue #106
+<https://github.com/adamchainz/flake8-tidy-imports/issues/106>`__ due to
+conflict with ``flake8-import-order``.
+
 I250: Unnecessary import alias
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

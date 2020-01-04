@@ -2,6 +2,16 @@
 History
 =======
 
+4.0.0 (2020-01-04)
+------------------
+
+* Add 50 to all rule codes to avoid conflict with ``flake8-import-order``. This
+  means rule ``I200`` is now ``I250``, etc.
+
+  If you have configured `flake8's select or ignore options
+  <http://flake8.pycqa.org/en/latest/user/violations.html>`__, you may need to
+  update it to keep the ``flake8-tidy-imports`` rules active.
+
 3.1.0 (2019-11-15)
 ------------------
 

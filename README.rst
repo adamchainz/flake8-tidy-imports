@@ -21,7 +21,7 @@ Install from ``pip`` with:
 
 .. code-block:: sh
 
-     pip install flake8-tidy-imports
+     python -m pip install flake8-tidy-imports
 
 Python 3.5 to 3.8 supported.
 

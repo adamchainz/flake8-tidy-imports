@@ -2,6 +2,13 @@
 History
 =======
 
+4.0.1 (2020-03-24)
+------------------
+
+* Fix ``cStringIO`` message for ``{python2to3}`` built-in ``banned-modules``.
+  Previously it looked for ``cStringIO.cStringIO`` which seems to never have
+  existed.
+
 4.0.0 (2020-01-04)
 ------------------
 

@@ -120,3 +120,8 @@ Complains about use of relative imports:
 * ``from .bar import foo``
 
 Needs enabling with ``ban-relative-imports`` configuration option.
+
+See also
+--------
+
+https://pypi.org/project/import-linter/

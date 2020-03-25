@@ -176,6 +176,7 @@ class ImportChecker(object):
         "FileDialog": "use six.moves.tkinter_filedialog as a drop-in replacement",
         "fpformat": "removed in Python 3",
         "ftplib.Netrc": "removed in Python 3",
+        "functools.wraps": "use six.wraps as a drop-in replacement",
         "gdbm": "use six.moves.dbm_gnu as a drop-in replacement",
         "htmlentitydefs": "use six.moves.html_entities as a drop-in replacement",
         "htmllib": "use six.moves.html_parser instead",

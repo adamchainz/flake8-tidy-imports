@@ -7,7 +7,7 @@ else:
     from importlib_metadata import version
 
 
-class ImportChecker(object):
+class ImportChecker:
     """
     Flake8 plugin to make your import statements tidier.
     """

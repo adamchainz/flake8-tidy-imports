@@ -2,6 +2,11 @@
 History
 =======
 
+4.1.0 (2020-03-25)
+------------------
+
+* Make ``{python2to3}`` ban ``functools.wraps`` in favour of ``six.wraps``.
+
 4.0.1 (2020-03-24)
 ------------------
 

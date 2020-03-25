@@ -124,4 +124,5 @@ Needs enabling with ``ban-relative-imports`` configuration option.
 See also
 --------
 
-https://pypi.org/project/import-linter/
+For more advanced control of imports in your project, try
+`import-linter <https://pypi.org/project/import-linter/>`__.

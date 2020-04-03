@@ -2,14 +2,14 @@
 flake8-tidy-imports
 ===================
 
-.. image:: https://img.shields.io/pypi/v/flake8-tidy-imports.svg
-        :target: https://pypi.python.org/pypi/flake8-tidy-imports
-
 .. image:: https://github.com/adamchainz/flake8-tidy-imports/workflows/CI/badge.svg?branch=master
-        :target: https://github.com/adamchainz/flake8-tidy-imports/actions?workflow=CI
+   :target: https://github.com/adamchainz/flake8-tidy-imports/actions?workflow=CI
+
+.. image:: https://img.shields.io/pypi/v/flake8-tidy-imports.svg
+   :target: https://pypi.python.org/pypi/flake8-tidy-imports
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/python/black
+   :target: https://github.com/python/black
 
 A `flake8 <https://flake8.readthedocs.io/en/latest/index.html>`_ plugin that
 helps you write tidier imports.

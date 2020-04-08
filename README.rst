@@ -69,6 +69,7 @@ Enables rule I252, which bans relative imports. See below.
     [flake8]
     ban-relative-imports = true
 
+(If you want to ban absolute imports, put your project's modules in ``banned-modules``.)
 
 Rules
 -----
@@ -120,6 +121,10 @@ Complains about use of relative imports:
 * ``from .bar import foo``
 
 Needs enabling with ``ban-relative-imports`` configuration option.
+
+Absolute imports are recommended by `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__:
+
+    Absolute imports are recommended, as they are usually more readable and tend to be better behaved...
 
 See also
 --------

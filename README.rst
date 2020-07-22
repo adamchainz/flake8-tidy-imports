@@ -33,6 +33,13 @@ check it is being picked up with:
     $ flake8 --version
     3.7.9 (flake8-tidy-imports: 3.1.0, mccabe: 0.6.1, pycodestyle: 2.5.0, pyflakes: 2.1.1) CPython 3.8.0 on Darwin
 
+----
+
+**Linting a Django project?**
+Check out my book `Speed Up Your Django Tests <https://gumroad.com/l/suydt>`__ which covers loads of best practices so you can write faster, more accurate tests.
+
+----
+
 Options
 -------
 

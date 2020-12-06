@@ -10,10 +10,10 @@ else:
     from importlib_metadata import version
 
 
-default_setup_cfg = textwrap.dedent("""\
+default_setup_cfg = """\
 [flake8]
 select = I2
-""")
+"""
 
 
 @pytest.fixture

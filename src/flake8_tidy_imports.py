@@ -247,7 +247,7 @@ class ImportChecker:
         "string.lower": "removed in Python 3",
         "string.lowercase": "moved in Python 3, use string.ascii_lowercase as a drop-in replacement",  # noqa:B950
         "string.lstrip": "removed in Python 3",
-        "string.maketrans": "moved in Python 3, use bytes.maketrans/bytearray.maketrans or a dict of unicode codepoints to substitutions instead",  # noqa:E501
+        "string.maketrans": "moved in Python 3, use bytes.maketrans/bytearray.maketrans or a dict of unicode codepoints to substitutions instead",  # noqa:B950
         "string.replace": "removed in Python 3",
         "string.rfind": "removed in Python 3",
         "string.rindex": "removed in Python 3",

@@ -1,10 +1,25 @@
 import re
 import sys
+import textwrap
+
+import pytest
 
 if sys.version_info >= (3, 8):
     from importlib.metadata import version
 else:
     from importlib_metadata import version
+
+
+default_setup_cfg = """\
+[flake8]
+select = I2
+"""
+
+
+@pytest.fixture
+def flake8dir(flake8dir):
+    flake8dir.make_setup_cfg(default_setup_cfg)
+    yield flake8dir
 
 
 def test_version(flake8dir):
@@ -97,7 +112,6 @@ def test_I250_fail_3(flake8dir):
     assert set(result.out_lines) == {
         "./example.py:1:1: I250 Unnecessary import alias - rewrite as 'import foo'.",
         "./example.py:1:1: I250 Unnecessary import alias - rewrite as 'import bar'.",
-        "./example.py:1:18: E401 multiple imports on one line",
     }
 
 
@@ -181,10 +195,7 @@ def test_I251_import_mock_config(flake8dir):
     """
     )
     flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        banned-modules = mock = use unittest.mock instead
-    """
+        default_setup_cfg + "banned-modules = mock = use unittest.mock instead"
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == [
@@ -203,11 +214,13 @@ def test_I251_most_specific_imports(flake8dir):
     """
     )
     flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        banned-modules = foo = use foo_prime instead
-                         foo.bar = use foo_prime.bar_rename instead
-    """
+        default_setup_cfg
+        + textwrap.dedent(
+            """\
+            banned-modules = foo = use foo_prime instead
+                             foo.bar = use foo_prime.bar_rename instead
+            """
+        )
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == [
@@ -232,10 +245,7 @@ def test_I251_relative_import(flake8dir):
     """
     )
     flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        banned-modules = bar = use bar_prime instead
-    """
+        default_setup_cfg + "banned-modules = bar = use bar_prime instead"
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == []
@@ -250,10 +260,7 @@ def test_I251_relative_import_2(flake8dir):
     """
     )
     flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        banned-modules = bar = use bar_prime instead
-    """
+        default_setup_cfg + "banned-modules = bar = use bar_prime instead"
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == []
@@ -272,7 +279,6 @@ def test_I251_import_mock_and_others(flake8dir):
         extra_args=["--banned-modules", "mock = use unittest.mock instead"]
     )
     assert set(result.out_lines) == {
-        "./example.py:1:11: E401 multiple imports on one line",
         "./example.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead.",
     }
 
@@ -290,7 +296,6 @@ def test_I251_import_mock_and_others_all_banned(flake8dir):
         extra_args=["--banned-modules", "mock = foo\nast = bar"]
     )
     assert set(result.out_lines) == {
-        "./example.py:1:11: E401 multiple imports on one line",
         "./example.py:1:1: I251 Banned import 'mock' used - foo.",
         "./example.py:1:1: I251 Banned import 'ast' used - bar.",
     }
@@ -382,12 +387,7 @@ def test_I252_relative_import(flake8dir):
         foo
         """
     )
-    flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        ban-relative-imports = true
-        """
-    )
+    flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = true")
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
 
@@ -400,12 +400,7 @@ def test_I252_relative_import_2(flake8dir):
         bar
         """
     )
-    flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        ban-relative-imports = true
-        """
-    )
+    flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = true")
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
 
@@ -418,12 +413,7 @@ def test_I252_relative_import_3(flake8dir):
         bar
         """
     )
-    flake8dir.make_setup_cfg(
-        """
-        [flake8]
-        ban-relative-imports = true
-        """
-    )
+    flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = true")
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
 

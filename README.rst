@@ -15,27 +15,36 @@ flake8-tidy-imports
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
-A `flake8 <https://flake8.readthedocs.io/en/latest/index.html>`_ plugin that
-helps you write tidier imports.
+A `flake8 <https://flake8.readthedocs.io/en/latest/index.html>`_ plugin that helps you write tidier imports.
+
+Requirements
+============
+
+Python 3.6 to 3.9 supported.
 
 Installation
-------------
+============
 
-Install from ``pip`` with:
+First, install with ``pip``:
 
 .. code-block:: sh
 
      python -m pip install flake8-tidy-imports
 
-Python 3.6 to 3.9 supported.
-
-When installed it will automatically be run as part of ``flake8``; you can
-check it is being picked up with:
+Second, check that ``flake8`` lists the plugin in its version line:
 
 .. code-block:: sh
 
     $ flake8 --version
     3.7.9 (flake8-tidy-imports: 3.1.0, mccabe: 0.6.1, pycodestyle: 2.5.0, pyflakes: 2.1.1) CPython 3.8.0 on Darwin
+
+Third, add the ``I25`` prefix to your `select list <https://flake8.pycqa.org/en/latest/user/options.html#cmdoption-flake8-select>`__.
+For example, if you have your configuration in ``setup.cfg``:
+
+.. code-block:: ini
+
+    [flake8]
+    select = E,F,W,I25
 
 ----
 
@@ -45,53 +54,54 @@ Check out my book `Speed Up Your Django Tests <https://gumroad.com/l/suydt>`__ w
 ----
 
 Options
--------
+=======
 
 ``banned-modules``
-~~~~~~~~~~~~~~~~~~
+------------------
 
-Config for rule I251 (see below). A map where each line is a banned import
-string, followed by '=', then the message to use when encountering that banned
-import. Note that despite the name, you can ban imported objects too, since the
-syntax is the same, such as ``decimal.Decimal``.
+Config for rule I251 (below).
+Should contain a map where each line is a banned import string, followed by '=', then the message to use when encountering that import.
 
-There is also a special directive to ban a preselected list of removed/moved
-modules between Python 2 and Python 3, recommending replacements, from `six
-<https://pythonhosted.org/six/>`_ where possible. It can be turned on by adding
-``{python2to3}`` to the list of ``banned-modules``.
+There is also a special directive to ban a preselected list of removed/moved modules between Python 2 and Python 3, recommending replacements from `six
+<https://pythonhosted.org/six/>`_ where possible.
+It can be turned on by adding ``{python2to3}`` to the list of ``banned-modules``.
 
-Whilst the option can be passed on the commandline, it's much easier to
-configure it in your config file, such as ``setup.cfg``, for example:
+For example in ``setup.cfg``:
 
 .. code-block:: ini
 
     [flake8]
-    banned-modules = mock = use unittest.mock!
-                     urlparse = use six.moves.urllib.parse!
+    banned-modules = mock = Use unittest.mock.
                      {python2to3}
 
-``ban-relative-imports``
-~~~~~~~~~~~~~~~~~~~~~~~~
+Note that despite the name, you can ban imported objects too, since the syntax is the same.
+For example:
 
-Enables rule I252, which bans relative imports. See below.
+.. code-block:: ini
+
+    [flake8]
+    banned-modules = decimal.Decimal = Use ints and floats only.
+
+``ban-relative-imports``
+------------------------
+
+When set to 'true', enables rule I252 (below), which bans relative imports:
 
 .. code-block:: ini
 
     [flake8]
     ban-relative-imports = true
 
-(If you want to ban absolute imports, put your project's modules in ``banned-modules``.)
+(Or, if you want to ban absolute imports, you can put your project's modules in ``banned-modules``.)
 
 Rules
------
+=====
 
-**N.B.** Before version 4.0.0, the rule codes were numbered 50 less, e.g. I250
-was I200. They were changed in `Issue #106
-<https://github.com/adamchainz/flake8-tidy-imports/issues/106>`__ due to
-conflict with ``flake8-import-order``.
+**Note:** Before version 4.0.0, the rule codes were numbered 50 lower, e.g. I250 was I200.
+They were changed in `Issue #106 <https://github.com/adamchainz/flake8-tidy-imports/issues/106>`__ due to conflict with ``flake8-import-order``.
 
 I250: Unnecessary import alias
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 Complains about unnecessary import aliasing of three forms:
 
@@ -99,24 +109,21 @@ Complains about unnecessary import aliasing of three forms:
 * ``import foo.bar as bar`` -> ``from foo import bar``
 * ``from foo import bar as bar`` -> ``from foo import bar``
 
-The message includes the suggested rewrite (which may not be correct at
-current), for example:
+The message includes the suggested rewrite (which may not *always* be correct), for example:
 
 .. code-block:: sh
 
     $ flake8 file.py
     file.py:1:1: I250 Unnecessary import alias - rewrite as 'from foo import bar'.
 
-I251: Banned import 'foo' used
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+I251: Banned import ``<import>`` used.
+--------------------------------------
 
-Complains about importing of banned imports. This might be useful when
-refactoring code, for example when moving from Python 2 to 3. By default there
-are no imports banned - you should configure them with ``banned-modules`` as
-described above in 'Options'.
+Complains about use of banned imports.
+By default there are no imports banned - you should configure them with ``banned-modules`` as described above in 'Options'.
 
-The message includes a user-defined part that comes from the configuration. For
-example:
+The message includes a user-defined part that comes from the configuration.
+For example:
 
 .. code-block:: sh
 
@@ -124,7 +131,7 @@ example:
     file.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead.
 
 I252: Relative imports are banned.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------
 
 Complains about use of relative imports:
 
@@ -140,5 +147,4 @@ Absolute imports are recommended by `PEP8 <https://www.python.org/dev/peps/pep-0
 See also
 --------
 
-For more advanced control of imports in your project, try
-`import-linter <https://pypi.org/project/import-linter/>`__.
+For more advanced control of imports in your project, try `import-linter <https://pypi.org/project/import-linter/>`__.

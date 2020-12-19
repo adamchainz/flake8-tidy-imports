@@ -2,6 +2,8 @@
 History
 =======
 
+* Improved installation instructions in README.
+
 4.2.0 (2020-12-13)
 ------------------
 

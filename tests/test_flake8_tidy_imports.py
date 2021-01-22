@@ -418,7 +418,6 @@ def test_I252_relative_import_3(flake8dir):
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
 
 
-
 def test_I252_relative_import_less_than_max_level(flake8dir):
     flake8dir.make_example_py(
         """
@@ -428,9 +427,9 @@ def test_I252_relative_import_less_than_max_level(flake8dir):
         """
     )
     flake8dir.make_setup_cfg(
-        default_setup_cfg +
-        "ban-relative-imports = true\n" +
-        "max-relative-import-level = 3\n"
+        default_setup_cfg
+        + "ban-relative-imports = true\n"
+        + "max-relative-import-level = 3\n"
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == []
@@ -445,9 +444,9 @@ def test_I252_relative_import_at_max_level(flake8dir):
         """
     )
     flake8dir.make_setup_cfg(
-        default_setup_cfg +
-        "ban-relative-imports = true\n" +
-        "max-relative-import-level = 2\n"
+        default_setup_cfg
+        + "ban-relative-imports = true\n"
+        + "max-relative-import-level = 2\n"
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == []
@@ -462,12 +461,14 @@ def test_I252_relative_import_more_than_max_level(flake8dir):
         """
     )
     flake8dir.make_setup_cfg(
-        default_setup_cfg +
-        "ban-relative-imports = true\n" +
-        "max-relative-import-level = 1\n"
+        default_setup_cfg
+        + "ban-relative-imports = true\n"
+        + "max-relative-import-level = 1\n"
     )
     result = flake8dir.run_flake8()
-    assert result.out_lines == ["./example.py:1:1: I252 Relative imports with level greater than 1 are banned."]
+    assert result.out_lines == [
+        "./example.py:1:1: I252 Relative imports with level greater than 1 are banned."
+    ]
 
 
 def test_I252_relative_import_negative_max_level_is_zero(flake8dir):
@@ -479,13 +480,12 @@ def test_I252_relative_import_negative_max_level_is_zero(flake8dir):
         """
     )
     flake8dir.make_setup_cfg(
-        default_setup_cfg +
-        "ban-relative-imports = true\n" +
-        "max-relative-import-level = -1\n"
+        default_setup_cfg
+        + "ban-relative-imports = true\n"
+        + "max-relative-import-level = -1\n"
     )
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
-
 
 
 def test_I252_relative_import_commandline(flake8dir):

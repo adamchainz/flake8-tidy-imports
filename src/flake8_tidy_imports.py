@@ -151,7 +151,9 @@ class ImportChecker:
             and node.level > self.max_relative_import_level
         ):
             if self.max_relative_import_level:
-                level_string = "with level greater than {level} ".format(level=self.max_relative_import_level)
+                level_string = "with level greater than {level} ".format(
+                    level=self.max_relative_import_level
+                )
             else:
                 level_string = ""
             message = self.message_I252.format(level_string=level_string)

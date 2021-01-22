@@ -144,6 +144,13 @@ Absolute imports are recommended by `PEP8 <https://www.python.org/dev/peps/pep-0
 
     Absolute imports are recommended, as they are usually more readable and tend to be better behaved...
 
+To allow some relative imports up to a certain backwards level, set the ``max-relative-import-levels`` option to the maximum number of consecutive dots to allow. For example, with ``max-relative-import-level = 1``:
+
+* ``from . import bar`` is allowed
+* ``from .foo import bar`` is allowed
+* ``from .. import bar`` is not allowed
+* ``from ..foo import bar`` is not allowed
+
 See also
 --------
 

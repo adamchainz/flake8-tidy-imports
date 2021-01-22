@@ -39,6 +39,15 @@ class ImportChecker:
             help="Ban relative imports (use absolute imports instead).",
         )
 
+        parser.add_option(
+            "--max-relative-import-level",
+            type="int",
+            action="store",
+            default=0,
+            parse_from_config=True,
+            help="The maximum number of levels (consecutive dots) that relative imports can use.",
+        )
+
     @classmethod
     def parse_options(cls, options):
         lines = [
@@ -57,10 +66,11 @@ class ImportChecker:
             cls.banned_modules[module] = message
 
         cls.ban_relative_imports = options.ban_relative_imports
+        cls.max_relative_import_level = max(options.max_relative_import_level, 0)
 
     message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
     message_I251 = "I251 Banned import '{name}' used - {msg}."
-    message_I252 = "I252 Relative imports are banned."
+    message_I252 = "I252 Relative imports {level_string}are banned."
 
     def run(self):
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
@@ -138,9 +148,14 @@ class ImportChecker:
         if (
             self.ban_relative_imports
             and isinstance(node, ast.ImportFrom)
-            and node.level != 0
+            and node.level > self.max_relative_import_level
         ):
-            yield (node.lineno, node.col_offset, self.message_I252, type(self))
+            if self.max_relative_import_level:
+                level_string = "with level greater than {level} ".format(level=self.max_relative_import_level)
+            else:
+                level_string = ""
+            message = self.message_I252.format(level_string=level_string)
+            yield (node.lineno, node.col_offset, message, type(self))
 
     python2to3_banned_modules = {
         "__builtin__": "use six.moves.builtins as a drop-in replacement",

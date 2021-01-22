@@ -45,7 +45,10 @@ class ImportChecker:
             action="store",
             default=0,
             parse_from_config=True,
-            help="The maximum number of levels (consecutive dots) that relative imports can use.",
+            help=(
+                "The maximum number of levels (consecutive dots) "
+                + "that relative imports can use."
+            ),
         )
 
     @classmethod

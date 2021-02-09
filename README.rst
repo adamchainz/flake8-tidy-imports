@@ -116,6 +116,8 @@ The message includes the suggested rewrite (which may not *always* be correct), 
     $ flake8 file.py
     file.py:1:1: I250 Unnecessary import alias - rewrite as 'from foo import bar'.
 
+Such aliases can be automatically fixed by ``isort`` if you activate its `remove_redundant_aliases option <https://pycqa.github.io/isort/docs/configuration/options/#remove-redundant-aliases>`__.
+
 I251: Banned import ``<import>`` used.
 --------------------------------------
 

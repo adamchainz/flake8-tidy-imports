@@ -81,9 +81,9 @@ class ImportChecker:
                 if imported_name == alias.asname:
 
                     if from_name:
-                        rewritten = "from {} import {}".format(from_name, imported_name)
+                        rewritten = f"from {from_name} import {imported_name}"
                     else:
-                        rewritten = "import {}".format(imported_name)
+                        rewritten = f"import {imported_name}"
 
                     yield (
                         node.lineno,
@@ -95,7 +95,7 @@ class ImportChecker:
             for alias in node.names:
                 if alias.name == alias.asname:
 
-                    rewritten = "from {} import {}".format(node.module, alias.name)
+                    rewritten = f"from {node.module} import {alias.name}"
 
                     yield (
                         node.lineno,
@@ -111,7 +111,7 @@ class ImportChecker:
             node_module = node.module or ""
             module_names = [node_module]
             for alias in node.names:
-                module_names.append("{}.{}".format(node_module, alias.name))
+                module_names.append(f"{node_module}.{alias.name}")
         else:
             return
 

@@ -39,9 +39,12 @@ class ImportChecker:
 
         parser.add_option(
             "--ban-relative-imports",
-            action="store_true",
-            default=False,
+            action="store",
+            nargs='?',
+            const='true',
             parse_from_config=True,
+            choices=["", "non-peers", "true"],
+            default="",
             help="Ban relative imports (use absolute imports instead).",
         )
 
@@ -147,10 +150,15 @@ class ImportChecker:
     def rule_I252(
         self, node: ast.AST
     ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+        if self.ban_relative_imports == "non-peers":
+            min_node_level = 1
+        else:
+            min_node_level = 0
+
         if (
             self.ban_relative_imports
             and isinstance(node, ast.ImportFrom)
-            and node.level != 0
+            and node.level > min_node_level
         ):
             yield (node.lineno, node.col_offset, self.message_I252, type(self))
 

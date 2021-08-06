@@ -1,5 +1,8 @@
 import ast
 import sys
+from typing import Any, Dict, Generator, Set, Tuple, Type
+
+from flake8.options.manager import OptionManager
 
 if sys.version_info >= (3, 8):
     from importlib.metadata import version
@@ -15,11 +18,14 @@ class ImportChecker:
     name = "flake8-tidy-imports"
     version = version("flake8-tidy-imports")
 
-    def __init__(self, tree, *args, **kwargs):
+    banned_modules: Dict[str, str]
+    ban_relative_imports: bool
+
+    def __init__(self, tree: ast.AST) -> None:
         self.tree = tree
 
     @classmethod
-    def add_options(cls, parser):
+    def add_options(cls, parser: OptionManager) -> None:
         parser.add_option(
             "--banned-modules",
             action="store",
@@ -40,7 +46,7 @@ class ImportChecker:
         )
 
     @classmethod
-    def parse_options(cls, options):
+    def parse_options(cls, options: Any) -> None:
         lines = [
             line.strip() for line in options.banned_modules.split("\n") if line.strip()
         ]
@@ -62,13 +68,15 @@ class ImportChecker:
     message_I251 = "I251 Banned import '{name}' used - {msg}."
     message_I252 = "I252 Relative imports are banned."
 
-    def run(self):
+    def run(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
                 yield from rule_func(node)
 
-    def rule_I250(self, node):
+    def rule_I250(
+        self, node: ast.AST
+    ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
         if isinstance(node, ast.Import):
             for alias in node.names:
 
@@ -104,7 +112,9 @@ class ImportChecker:
                         type(self),
                     )
 
-    def rule_I251(self, node):
+    def rule_I251(
+        self, node: ast.AST
+    ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
         if isinstance(node, ast.Import):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
@@ -118,7 +128,7 @@ class ImportChecker:
         # Sort from most to least specific paths.
         module_names.sort(key=len, reverse=True)
 
-        warned = set()
+        warned: Set[str] = set()
 
         for module_name in module_names:
 
@@ -134,7 +144,9 @@ class ImportChecker:
                     warned.add(module_name)
                 yield (node.lineno, node.col_offset, message, type(self))
 
-    def rule_I252(self, node):
+    def rule_I252(
+        self, node: ast.AST
+    ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
         if (
             self.ban_relative_imports
             and isinstance(node, ast.ImportFrom)

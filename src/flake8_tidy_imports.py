@@ -40,8 +40,8 @@ class ImportChecker:
         parser.add_option(
             "--ban-relative-imports",
             action="store",
-            nargs='?',
-            const='true',
+            nargs="?",
+            const="true",
             parse_from_config=True,
             choices=["", "non-peers", "true"],
             default="",

@@ -493,11 +493,11 @@ def test_I252_relative_import_non_peers1(flake8dir):
 
         foo
         """
-
     )
     flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = non-peers")
     result = flake8dir.run_flake8()
     assert result.out_lines == []
+
 
 def test_I252_relative_import_non_peers2(flake8dir):
     flake8dir.make_example_py(
@@ -506,11 +506,11 @@ def test_I252_relative_import_non_peers2(flake8dir):
 
         bar
         """
-
     )
     flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = non-peers")
     result = flake8dir.run_flake8()
     assert result.out_lines == []
+
 
 def test_I252_relative_import_non_peers3(flake8dir):
     flake8dir.make_example_py(
@@ -519,11 +519,11 @@ def test_I252_relative_import_non_peers3(flake8dir):
 
         foo
         """
-
     )
     flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = non-peers")
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
+
 
 def test_I252_relative_import_non_peers4(flake8dir):
     flake8dir.make_example_py(
@@ -532,11 +532,11 @@ def test_I252_relative_import_non_peers4(flake8dir):
 
         bar
         """
-
     )
     flake8dir.make_setup_cfg(default_setup_cfg + "ban-relative-imports = non-peers")
     result = flake8dir.run_flake8()
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
+
 
 def test_I252_relative_import_non_peers_commandline(flake8dir):
     flake8dir.make_example_py(
@@ -545,7 +545,6 @@ def test_I252_relative_import_non_peers_commandline(flake8dir):
 
         bar
         """
-
     )
     result = flake8dir.run_flake8(["--ban-relative-imports=non-peers"])
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]

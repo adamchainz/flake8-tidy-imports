@@ -85,14 +85,19 @@ For example:
 ``ban-relative-imports``
 ------------------------
 
-When set to 'true', enables rule I252 (below), which bans relative imports:
+Controls rule I252 (below). Accepts two values:
+
+* ``parents`` - bans imports from parent modules (and grandparents, etc.), i.e. with more than one ``.``.
+* ``true`` - bans all relative imports.
+
+For example:
 
 .. code-block:: ini
 
     [flake8]
-    ban-relative-imports = true
+    ban-relative-imports = parents
 
-(Or, if you want to ban absolute imports, you can put your project's modules in ``banned-modules``.)
+(If you want to ban absolute imports, you can put your project's modules in ``banned-modules``.)
 
 Rules
 =====
@@ -132,19 +137,33 @@ For example:
     $ flake8 file.py
     file.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead.
 
-I252: Relative imports are banned.
-----------------------------------
+I252: Relative imports <from parent modules> are banned.
+--------------------------------------------------------
 
 Complains about use of relative imports:
 
-* ``from . import foo``
-* ``from .bar import foo``
+* ``from . import foo`` (sibling import)
+* ``from .bar import foo`` (sibling import)
+* ``from .. import foo`` (parent import)
 
-Needs enabling with ``ban-relative-imports`` configuration option.
+Controlled by the ``ban-relative-imports`` configuration option.
 
-Absolute imports are recommended by `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__:
+Absolute imports, or relative imports from siblings, are recommended by `PEP8 <https://www.python.org/dev/peps/pep-0008/>`__:
 
     Absolute imports are recommended, as they are usually more readable and tend to be better behaved...
+
+    .. code-block:: python
+
+        import mypkg.sibling
+        from mypkg import sibling
+        from mypkg.sibling import example
+
+    However, explicit relative imports are an acceptable alternative to absolute imports...
+
+    .. code-block:: python
+
+        from . import sibling
+        from .sibling import example
 
 See also
 --------

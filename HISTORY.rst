@@ -2,6 +2,9 @@
 History
 =======
 
+4.4.0 (2021-08-11)
+------------------
+
 * Add ``parents`` option for ``ban-relative-imports`` that allows using
   relative syntax to import from sibling modules, but not parents.
 

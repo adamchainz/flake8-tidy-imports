@@ -486,7 +486,7 @@ def test_I252_relative_import_commandline(flake8_path):
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
 
 
-def test_I252_relative_import_non_peers1(flake8_path):
+def test_I252_relative_import_parents1(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -497,13 +497,13 @@ def test_I252_relative_import_non_peers1(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = non-peers"
+        default_setup_cfg + "ban-relative-imports = parents"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == []
 
 
-def test_I252_relative_import_non_peers2(flake8_path):
+def test_I252_relative_import_parents2(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -514,13 +514,13 @@ def test_I252_relative_import_non_peers2(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = non-peers"
+        default_setup_cfg + "ban-relative-imports = parents"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == []
 
 
-def test_I252_relative_import_non_peers3(flake8_path):
+def test_I252_relative_import_parents3(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -531,13 +531,15 @@ def test_I252_relative_import_non_peers3(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = non-peers"
+        default_setup_cfg + "ban-relative-imports = parents"
     )
     result = flake8_path.run_flake8()
-    assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
+    assert result.out_lines == [
+        "./example.py:1:1: I252 Relative imports from parent modules are banned."
+    ]
 
 
-def test_I252_relative_import_non_peers4(flake8_path):
+def test_I252_relative_import_parents4(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -548,13 +550,15 @@ def test_I252_relative_import_non_peers4(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = non-peers"
+        default_setup_cfg + "ban-relative-imports = parents"
     )
     result = flake8_path.run_flake8()
-    assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
+    assert result.out_lines == [
+        "./example.py:1:1: I252 Relative imports from parent modules are banned."
+    ]
 
 
-def test_I252_relative_import_non_peers_commandline(flake8_path):
+def test_I252_relative_import_parents_commandline(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -564,5 +568,7 @@ def test_I252_relative_import_non_peers_commandline(flake8_path):
             """
         )
     )
-    result = flake8_path.run_flake8(["--ban-relative-imports=non-peers"])
-    assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
+    result = flake8_path.run_flake8(["--ban-relative-imports=parents"])
+    assert result.out_lines == [
+        "./example.py:1:1: I252 Relative imports from parent modules are banned."
+    ]

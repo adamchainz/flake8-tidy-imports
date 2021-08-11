@@ -43,9 +43,9 @@ class ImportChecker:
             nargs="?",
             const="true",
             parse_from_config=True,
-            choices=["", "non-peers", "true"],
+            choices=["", "parents", "true"],
             default="",
-            help="Ban relative imports (use absolute imports instead).",
+            help="Ban relative imports, from parental modules or in all cases.",
         )
 
     @classmethod
@@ -69,7 +69,6 @@ class ImportChecker:
 
     message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
     message_I251 = "I251 Banned import '{name}' used - {msg}."
-    message_I252 = "I252 Relative imports are banned."
 
     def run(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
@@ -150,17 +149,21 @@ class ImportChecker:
     def rule_I252(
         self, node: ast.AST
     ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
-        if self.ban_relative_imports == "non-peers":
+        if not self.ban_relative_imports:
+            return
+        elif self.ban_relative_imports == "parents":
             min_node_level = 1
+            message = "I252 Relative imports from parent modules are banned."
         else:
             min_node_level = 0
+            message = "I252 Relative imports are banned."
 
         if (
             self.ban_relative_imports
             and isinstance(node, ast.ImportFrom)
             and node.level > min_node_level
         ):
-            yield (node.lineno, node.col_offset, self.message_I252, type(self))
+            yield (node.lineno, node.col_offset, message, type(self))
 
     python2to3_banned_modules = {
         "__builtin__": "use six.moves.builtins as a drop-in replacement",

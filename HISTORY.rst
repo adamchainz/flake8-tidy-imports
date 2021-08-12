@@ -2,6 +2,10 @@
 History
 =======
 
+* Correctly declare dependency on flake8 3.8.0+. This is required as flake8
+  moved from optparse to argparse, and the change to ``ban-relative-imports``
+  uses argparse features.
+
 4.4.0 (2021-08-11)
 ------------------
 

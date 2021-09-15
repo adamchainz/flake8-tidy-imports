@@ -1,6 +1,7 @@
 import ast
+import fnmatch
 import sys
-from typing import Any, Dict, Generator, Set, Tuple, Type
+from typing import Any, Dict, Generator, List, Set, Tuple, Type
 
 from flake8.options.manager import OptionManager
 
@@ -19,6 +20,7 @@ class ImportChecker:
     version = version("flake8-tidy-imports")
 
     banned_modules: Dict[str, str]
+    banned_patterns: Dict[str, str]
     ban_relative_imports: bool
 
     def __init__(self, tree: ast.AST) -> None:
@@ -54,6 +56,8 @@ class ImportChecker:
             line.strip() for line in options.banned_modules.split("\n") if line.strip()
         ]
         cls.banned_modules = {}
+        cls.banned_patterns = {}
+        banned_patterns: List[Tuple[str, str]] = []
         for line in lines:
             if line == "{python2to3}":
                 cls.banned_modules.update(cls.python2to3_banned_modules)
@@ -63,7 +67,18 @@ class ImportChecker:
             module, message = line.split("=", 1)
             module = module.strip()
             message = message.strip()
-            cls.banned_modules[module] = message
+            # Entries that end with .* will be treated as prefixes for matching
+            # Store them in a list first, so we can sort them before adding to the dict
+            if module.endswith(".*"):
+                prefix = module[:-2]
+                cls.banned_modules[prefix] = message
+                banned_patterns.append((module, message))
+            else:
+                cls.banned_modules[module] = message
+
+        banned_patterns.sort(key=lambda x: len(x[0]), reverse=True)
+        for pattern, message in banned_patterns:
+            cls.banned_patterns[pattern] = message
 
         cls.ban_relative_imports = options.ban_relative_imports
 
@@ -114,6 +129,17 @@ class ImportChecker:
                         type(self),
                     )
 
+    def _is_module_banned(self, module_name: str) -> Tuple[bool, str]:
+        if module_name in self.banned_modules:
+            return True, self.banned_modules[module_name]
+
+        # Check wildcards
+        for banned_pattern, msg in self.banned_patterns.items():
+            if fnmatch.fnmatchcase(module_name, banned_pattern):
+                return True, msg
+
+        return False, ""
+
     def rule_I251(
         self, node: ast.AST
     ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
@@ -134,10 +160,9 @@ class ImportChecker:
 
         for module_name in module_names:
 
-            if module_name in self.banned_modules:
-                message = self.message_I251.format(
-                    name=module_name, msg=self.banned_modules[module_name]
-                )
+            is_banned, msg = self._is_module_banned(module_name)
+            if is_banned:
+                message = self.message_I251.format(name=module_name, msg=msg)
                 if any(mod.startswith(module_name) for mod in warned):
                     # Do not show an error for this line if we already showed
                     # a more specific error.

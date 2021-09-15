@@ -387,6 +387,137 @@ def test_I251_from_unittest_import_mock_as(flake8_path):
     ]
 
 
+def test_I251_from_unittest_import_wildcard(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo.bar import Bar
+
+            Bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.* = foo is banned"]
+    )
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo.bar.Bar' used - foo is banned."
+    ]
+
+
+def test_I251_import_import_wildcard(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import mock
+
+            mock
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "mock.* = use unittest.mock instead"]
+    )
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead."
+    ]
+
+
+def test_I251_from_unittest_import_wildcard_specific(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo
+            import foo.bar
+            from foo import bar
+
+            [foo, foo.bar, bar]
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg
+        + dedent(
+            """\
+            banned-modules = foo.* = use foo_prime instead
+                             foo.bar = use foo_prime.bar_rename instead
+            """
+        )
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo' used - use foo_prime instead.",
+        (
+            "./example.py:2:1: I251 Banned import 'foo.bar' used - use "
+            + "foo_prime.bar_rename instead."
+        ),
+        (
+            "./example.py:3:1: I251 Banned import 'foo.bar' used - use "
+            + "foo_prime.bar_rename instead."
+        ),
+    ]
+
+
+def test_I251_from_unittest_import_wildcard_no_match(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo.bar import Bar
+
+            Bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.baz.* = foo.baz is banned"]
+    )
+    assert result.out_lines == []
+
+
+def test_I251_from_unittest_import_wildcard_multiple_matches(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo.baz
+            import foo.bar.bat
+
+            [foo, foo.bar]
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg
+        + dedent(
+            """\
+            banned-modules = foo.* = general
+                             foo.bar.* = specific
+            """
+        )
+    )
+    result = flake8_path.run_flake8()
+    # foo.* matches both, but we prefer the longer matching pattern
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo.baz' used - general.",
+        "./example.py:2:1: I251 Banned import 'foo.bar.bat' used - specific.",
+    ]
+
+
+def test_I251_import_import_wildcard_partial_prefix_doesnt_match(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import mock
+
+            mock
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "m.* = this should not match"]
+    )
+    assert result.out_lines == []
+
+
 def test_I251_python2to3_import_md5(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(

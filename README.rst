@@ -82,12 +82,11 @@ For example:
     [flake8]
     banned-modules = decimal.Decimal = Use ints and floats only.
 
-Entries ending in ``.*`` are treated as wildcards; the example will ban both ``import foo`` and ``import foo.bar``:
+Entries containing ``*`` are treated as wildcards. For example:
 
-.. code-block:: ini
+* ``foo.bar.*`` will ban both ``import foo.bar`` and ``import foo.bar.baz``
+* ``foo.*.baz`` will ban both ``import foo.baz`` and ``import foo.bar.baz``
 
-    [flake8]
-    banned-modules = foo.* = foo is deprecated.
 
 ``ban-relative-imports``
 ------------------------

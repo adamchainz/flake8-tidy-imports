@@ -1,7 +1,7 @@
 import ast
-import fnmatch
+import re
 import sys
-from typing import Any, Dict, Generator, List, Set, Tuple, Type
+from typing import Any, Dict, Generator, List, Pattern, Set, Tuple, Type
 
 from flake8.options.manager import OptionManager
 
@@ -19,8 +19,11 @@ class ImportChecker:
     name = "flake8-tidy-imports"
     version = version("flake8-tidy-imports")
 
+    # The naming follows the approach described by mypy:
+    # https://mypy.readthedocs.io/en/stable/config_file.html#config-file-format
     banned_modules: Dict[str, str]
-    banned_patterns: Dict[str, str]
+    banned_structured_patterns: List[Tuple[str, str]]
+    banned_unstructured_patterns: List[Tuple[Pattern[str], str]]
     ban_relative_imports: bool
 
     def __init__(self, tree: ast.AST) -> None:
@@ -56,8 +59,8 @@ class ImportChecker:
             line.strip() for line in options.banned_modules.split("\n") if line.strip()
         ]
         cls.banned_modules = {}
-        cls.banned_patterns = {}
-        banned_patterns: List[Tuple[str, str]] = []
+        cls.banned_structured_patterns = []
+        cls.banned_unstructured_patterns = []
         for line in lines:
             if line == "{python2to3}":
                 cls.banned_modules.update(cls.python2to3_banned_modules)
@@ -67,18 +70,25 @@ class ImportChecker:
             module, message = line.split("=", 1)
             module = module.strip()
             message = message.strip()
-            # Entries that end with .* will be treated as prefixes for matching
-            # Store them in a list first, so we can sort them before adding to the dict
-            if module.endswith(".*"):
+
+            if "*" in module[:-1] or module == "*":
+                # unstructured
+                cls.banned_unstructured_patterns.append(
+                    (cls.compile_unstructured_glob(module), message)
+                )
+            elif module.endswith(".*"):
+                # structured
+                cls.banned_structured_patterns.append((module, message))
+                # Also check for exact matches without the wilcard
+                # e.g. "foo.*" matches "foo"
                 prefix = module[:-2]
-                cls.banned_modules[prefix] = message
-                banned_patterns.append((module, message))
+                if prefix not in cls.banned_modules:
+                    cls.banned_modules[prefix] = message
             else:
                 cls.banned_modules[module] = message
 
-        banned_patterns.sort(key=lambda x: len(x[0]), reverse=True)
-        for pattern, message in banned_patterns:
-            cls.banned_patterns[pattern] = message
+        # Sort the structured patterns so we match the specifc ones first.
+        cls.banned_structured_patterns.sort(key=lambda x: len(x[0]), reverse=True)
 
         cls.ban_relative_imports = options.ban_relative_imports
 
@@ -129,13 +139,32 @@ class ImportChecker:
                         type(self),
                     )
 
+    @staticmethod
+    def compile_unstructured_glob(s: str) -> Pattern[str]:
+        # Convert the patter to a regex such that ".*"
+        # matches zero or more moduels.
+        parts = s.split(".")
+        transformed_parts = [
+            "(\\..*)?" if p == "*" else "\\." + re.escape(p) for p in parts
+        ]
+        if parts[0] == "*":
+            transformed_parts[0] = ".*"
+        else:
+            transformed_parts[0] = re.escape(parts[0])
+        return re.compile("".join(transformed_parts) + "\\Z")
+
     def _is_module_banned(self, module_name: str) -> Tuple[bool, str]:
         if module_name in self.banned_modules:
             return True, self.banned_modules[module_name]
 
-        # Check wildcards
-        for banned_pattern, msg in self.banned_patterns.items():
-            if fnmatch.fnmatchcase(module_name, banned_pattern):
+        # Check unustructed wildcards
+        for banned_pattern, msg in self.banned_unstructured_patterns:
+            if banned_pattern.match(module_name):
+                return True, msg
+
+        # Check structured wildcards
+        for banned_prefix, msg in self.banned_structured_patterns:
+            if module_name.startswith(banned_prefix[:-1]):
                 return True, msg
 
         return False, ""

@@ -2,6 +2,8 @@
 History
 =======
 
+* Remove upper bound on Flake8 version.
+
 4.5.0 (2021-10-11)
 ------------------
 

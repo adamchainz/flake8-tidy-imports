@@ -1,6 +1,6 @@
 import ast
 import sys
-from typing import Any, Dict, Generator, Set, Tuple, Type
+from typing import TYPE_CHECKING, Any, Dict, Generator, Set, Tuple, Type
 
 from flake8.options.manager import OptionManager
 
@@ -8,6 +8,13 @@ if sys.version_info >= (3, 8):
     from importlib.metadata import version
 else:
     from importlib_metadata import version
+
+if TYPE_CHECKING:
+    from typing import Literal
+
+    BanRelativeImportsType = Literal["", "parents", "true"]
+else:
+    BanRelativeImportsType = str
 
 
 class ImportChecker:
@@ -19,7 +26,7 @@ class ImportChecker:
     version = version("flake8-tidy-imports")
 
     banned_modules: Dict[str, str]
-    ban_relative_imports: bool
+    ban_relative_imports: BanRelativeImportsType
 
     def __init__(self, tree: ast.AST) -> None:
         self.tree = tree
@@ -149,7 +156,7 @@ class ImportChecker:
     def rule_I252(
         self, node: ast.AST
     ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
-        if not self.ban_relative_imports:
+        if self.ban_relative_imports == "":
             return
         elif self.ban_relative_imports == "parents":
             min_node_level = 1

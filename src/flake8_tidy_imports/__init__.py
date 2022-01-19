@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import ast
 import sys
-from typing import TYPE_CHECKING, Any, Dict, Generator, Set, Tuple, Type
+from typing import TYPE_CHECKING, Any, Generator
 
 from flake8.options.manager import OptionManager
 
@@ -25,7 +27,7 @@ class ImportChecker:
     name = "flake8-tidy-imports"
     version = version("flake8-tidy-imports")
 
-    banned_modules: Dict[str, str]
+    banned_modules: dict[str, str]
     ban_relative_imports: BanRelativeImportsType
 
     def __init__(self, tree: ast.AST) -> None:
@@ -77,7 +79,7 @@ class ImportChecker:
     message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
     message_I251 = "I251 Banned import '{name}' used - {msg}."
 
-    def run(self) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+    def run(self) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
@@ -85,7 +87,7 @@ class ImportChecker:
 
     def rule_I250(
         self, node: ast.AST
-    ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         if isinstance(node, ast.Import):
             for alias in node.names:
 
@@ -123,7 +125,7 @@ class ImportChecker:
 
     def rule_I251(
         self, node: ast.AST
-    ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         if isinstance(node, ast.Import):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
@@ -137,7 +139,7 @@ class ImportChecker:
         # Sort from most to least specific paths.
         module_names.sort(key=len, reverse=True)
 
-        warned: Set[str] = set()
+        warned: set[str] = set()
 
         for module_name in module_names:
 
@@ -155,7 +157,7 @@ class ImportChecker:
 
     def rule_I252(
         self, node: ast.AST
-    ) -> Generator[Tuple[int, int, str, Type[Any]], None, None]:
+    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         if self.ban_relative_imports == "":
             return
         elif self.ban_relative_imports == "parents":

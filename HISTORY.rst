@@ -2,6 +2,18 @@
 History
 =======
 
+4.6.0 (2022-01-10)
+------------------
+
+* Drop Python 3.6 support.
+
+* Remove upper bound on Flake8 version.
+
+4.5.0 (2021-10-11)
+------------------
+
+* Support Flake8 4.
+
 4.4.1 (2021-08-12)
 ------------------
 

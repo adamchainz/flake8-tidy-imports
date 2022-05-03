@@ -6,6 +6,10 @@ on:
     - main
   pull_request:
 
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Python ${{ matrix.python-version }}
@@ -14,11 +18,10 @@ jobs:
     strategy:
       matrix:
         python-version:
-        - 3.6
         - 3.7
         - 3.8
         - 3.9
-        - 3.10-dev
+        - '3.10'
 
     steps:
     - uses: actions/checkout@v2
@@ -26,13 +29,8 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        cache: pip
+        cache-dependency-path: 'requirements/*.txt'
 
     - name: Install dependencies
       run: |

@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
@@ -7,7 +9,7 @@ from pathlib import Path
 if __name__ == "__main__":
     os.chdir(Path(__file__).parent)
     os.environ["CUSTOM_COMPILE_COMMAND"] = "requirements/compile.py"
-    os.environ.pop("PIP_REQUIRE_VIRTUALENV")
+    os.environ.pop("PIP_REQUIRE_VIRTUALENV", None)
     common_args = [
         "-m",
         "piptools",
@@ -15,11 +17,6 @@ if __name__ == "__main__":
         "--generate-hashes",
         "--allow-unsafe",
     ] + sys.argv[1:]
-    subprocess.run(
-        ["python3.6", *common_args, "-o", "py36.txt"],
-        check=True,
-        capture_output=True,
-    )
     subprocess.run(
         ["python3.7", *common_args, "-o", "py37.txt"],
         check=True,

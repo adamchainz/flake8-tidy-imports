@@ -20,7 +20,7 @@ A `flake8 <https://flake8.readthedocs.io/en/latest/index.html>`_ plugin that hel
 Requirements
 ============
 
-Python 3.6 to 3.10 supported.
+Python 3.7 to 3.10 supported.
 
 Installation
 ============
@@ -31,25 +31,13 @@ First, install with ``pip``:
 
      python -m pip install flake8-tidy-imports
 
-Second, check that ``flake8`` lists the plugin in its version line:
-
-.. code-block:: sh
-
-    $ flake8 --version
-    3.7.9 (flake8-tidy-imports: 3.1.0, mccabe: 0.6.1, pycodestyle: 2.5.0, pyflakes: 2.1.1) CPython 3.8.0 on Darwin
-
-Third, add the ``I25`` prefix to your `select list <https://flake8.pycqa.org/en/latest/user/options.html#cmdoption-flake8-select>`__.
-For example, if you have your configuration in ``setup.cfg``:
-
-.. code-block:: ini
-
-    [flake8]
-    select = E,F,W,I25
+Second, if you define Flake8’s ``select`` setting, add the ``I25`` prefix to it.
+Otherwise, the plugin should be active by default.
 
 ----
 
 **Linting a Django project?**
-Check out my book `Speed Up Your Django Tests <https://gumroad.com/l/suydt>`__ which covers loads of best practices so you can write faster, more accurate tests.
+Check out my book `Boost Your Django DX <https://adamchainz.gumroad.com/l/byddx>`__ which covers Flake8 and many other code quality tools.
 
 ----
 

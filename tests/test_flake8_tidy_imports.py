@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import sys
 from textwrap import dedent
+from unittest.mock import Mock
 
 import pytest
 
@@ -11,6 +12,7 @@ if sys.version_info >= (3, 8):
 else:
     from importlib_metadata import version
 
+from src.flake8_tidy_imports import ImportChecker
 
 default_setup_cfg = """\
 [flake8]
@@ -387,6 +389,213 @@ def test_I251_from_unittest_import_mock_as(flake8_path):
     assert result.out_lines == [
         "./example.py:1:1: I251 Banned import 'unittest.mock' used - actually use mock."
     ]
+
+
+def test_I251_from_unittest_import_wildcard(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo.bar import Bar
+
+            Bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.* = foo is banned"]
+    )
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo.bar.Bar' used - foo is banned."
+    ]
+
+
+def test_I251_import_import_wildcard(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import mock
+
+            mock
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "mock.* = use unittest.mock instead"]
+    )
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'mock' used - use unittest.mock instead."
+    ]
+
+
+def test_I251_from_unittest_import_wildcard_specific(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo
+            import foo.bar
+            from foo import bar
+
+            [foo, foo.bar, bar]
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg
+        + dedent(
+            """\
+            banned-modules = foo.* = use foo_prime instead
+                             foo.bar = use foo_prime.bar_rename instead
+            """
+        )
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo' used - use foo_prime instead.",
+        (
+            "./example.py:2:1: I251 Banned import 'foo.bar' used - use "
+            + "foo_prime.bar_rename instead."
+        ),
+        (
+            "./example.py:3:1: I251 Banned import 'foo.bar' used - use "
+            + "foo_prime.bar_rename instead."
+        ),
+    ]
+
+
+def test_I251_from_unittest_import_wildcard_no_match(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo.bar import Bar
+
+            Bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.baz.* = foo.baz is banned"]
+    )
+    assert result.out_lines == []
+
+
+def test_I251_from_unittest_import_wildcard_multiple_matches(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo.baz
+            import foo.bar.bat
+
+            [foo.baz, foo.bar.bat]
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg
+        + dedent(
+            """\
+            banned-modules = foo.* = general
+                             foo.bar.* = specific
+            """
+        )
+    )
+    result = flake8_path.run_flake8()
+    # foo.* matches both, but we prefer the longer matching pattern
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo.baz' used - general.",
+        "./example.py:2:1: I251 Banned import 'foo.bar.bat' used - specific.",
+    ]
+
+
+@pytest.mark.parametrize(
+    "module, expected_message",
+    (
+        ("foo", "concrete"),
+        ("foo.bar", "structured specific"),
+        ("foo.bar.bat", "structured specific"),
+        ("foo.bat", "structured general"),
+        ("foo.baz", "unstructured first"),
+        ("foo.bar.bat.baz", "unstructured first"),
+        ("foo.quux.baz", "unstructured first"),
+    ),
+)
+def test_I251_wildcard_precedence(flake8_path, module, expected_message):
+    """
+    Check that if there are multiple possible rules matching, they are matched
+    in the expected order.
+    """
+    (flake8_path / "example.py").write_text(
+        dedent(
+            f"""\
+            import {module}
+            [{module}]
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg
+        + dedent(
+            """\
+            banned-modules = foo = concrete
+                             foo.* = structured general
+                             foo.bar.* = structured specific
+                             foo.*.baz = unstructured first
+                             foo.*.quux.baz = unstructured second
+            """
+        )
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == [
+        f"./example.py:1:1: I251 Banned import '{module}' used - {expected_message}.",
+    ]
+
+
+@pytest.mark.parametrize(
+    "banned_module, imported_module, expected",
+    (
+        # Concrete matches
+        ("foo", "foo", True),
+        ("foo", "foo.bar", False),
+        # Structured matches
+        ("foo.bar.*", "foo.bar", True),
+        ("foo.bar.*", "foo.bar.baz", True),
+        ("foo.bar.*", "foo.bar.baz.quux", True),
+        ("foo.*", "foobar", False),
+        ("foo.*", "f", False),
+        ("foo.bar.*", "foo.bark.baz", False),
+        # Unstructured matches
+        ("site.*.migrations", "site.migrations", True),
+        ("site.*.migrations", "site.app.migrations", True),
+        ("site.*.migrations", "site.app.production.migrations", True),
+        ("site.*.migrations", "site.app", False),
+        ("site.*.migrations", "site.migrations.foo", False),
+        ("site.*.migrations.*", "site.migrations.foo", True),
+        ("site.*.migrations.*", "site.app.migrations.foo", True),
+        ("site.*.migrations.*", "site.app.production.migrations.foo", True),
+        ("site.*.migrations.*", "site.app", False),
+        ("foo.*.bar.*.baz", "foo.bar.baz", True),
+        ("foo.*.bar.*.baz", "foo.quux.bar.baz", True),
+        ("foo.*.bar.*.baz", "foo.quux.bar.qiix.baz", True),
+        ("foo.*.bar.*.baz", "foo.baz.bar", False),
+        ("*", "foo", True),
+        ("*.foo", "foo", False),
+        ("*.foo", "bar.foo", True),
+        ("*.foo", "bar.bazfoo", False),
+    ),
+)
+def test_I251_is_module_banned(banned_module, imported_module, expected):
+    # Set up a simple banned-modules string
+    banned_modules_str = f"{banned_module} = ERROR: {banned_module}"
+
+    # Set up an ImportChecker and pass the options in
+    checker = ImportChecker(Mock())
+    options = Mock()
+    options.banned_modules = banned_modules_str
+    options.ban_relative_imports = False
+
+    # Make sure we get the expected result on the module we're trying to import
+    checker.parse_options(options)
+    is_banned, _ = checker._is_module_banned(imported_module)
+    assert is_banned is expected
 
 
 def test_I251_python2to3_import_md5(flake8_path):

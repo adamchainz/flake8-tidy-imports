@@ -70,6 +70,12 @@ For example:
     [flake8]
     banned-modules = decimal.Decimal = Use ints and floats only.
 
+Entries containing ``*`` are treated as wildcards matching zero or more path components.
+For example:
+
+* ``example.yellow.*`` matches ``example.yellow``, ``example.yellow.truck``, ``example.yellow.truck.driving`` etc.
+* ``example.*.truck`` matches ``example.truck``, ``example.yellow.truck``, ``example.red.truck``, ``example.big.red.truck``, etc.
+
 ``ban-relative-imports``
 ------------------------
 

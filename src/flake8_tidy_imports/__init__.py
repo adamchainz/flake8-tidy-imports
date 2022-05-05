@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import ast
+import re
 import sys
-from typing import TYPE_CHECKING, Any, Generator
+from typing import TYPE_CHECKING, Any, Generator, Pattern
 
 from flake8.options.manager import OptionManager
 
@@ -27,7 +28,11 @@ class ImportChecker:
     name = "flake8-tidy-imports"
     version = version("flake8-tidy-imports")
 
+    # The naming follows the approach described by mypy:
+    # https://mypy.readthedocs.io/en/stable/config_file.html#config-file-format
     banned_modules: dict[str, str]
+    banned_structured_patterns: list[tuple[str, str]]
+    banned_unstructured_patterns: list[tuple[Pattern[str], str]]
     ban_relative_imports: BanRelativeImportsType
 
     def __init__(self, tree: ast.AST) -> None:
@@ -63,6 +68,8 @@ class ImportChecker:
             line.strip() for line in options.banned_modules.split("\n") if line.strip()
         ]
         cls.banned_modules = {}
+        cls.banned_structured_patterns = []
+        cls.banned_unstructured_patterns = []
         for line in lines:
             if line == "{python2to3}":
                 cls.banned_modules.update(cls.python2to3_banned_modules)
@@ -72,7 +79,25 @@ class ImportChecker:
             module, message = line.split("=", 1)
             module = module.strip()
             message = message.strip()
-            cls.banned_modules[module] = message
+
+            if "*" in module[:-1] or module == "*":
+                # unstructured
+                cls.banned_unstructured_patterns.append(
+                    (cls.compile_unstructured_glob(module), message)
+                )
+            elif module.endswith(".*"):
+                # structured
+                cls.banned_structured_patterns.append((module, message))
+                # Also check for exact matches without the wilcard
+                # e.g. "foo.*" matches "foo"
+                prefix = module[:-2]
+                if prefix not in cls.banned_modules:
+                    cls.banned_modules[prefix] = message
+            else:
+                cls.banned_modules[module] = message
+
+        # Sort the structured patterns so we match the specifc ones first.
+        cls.banned_structured_patterns.sort(key=lambda x: len(x[0]), reverse=True)
 
         cls.ban_relative_imports = options.ban_relative_imports
 
@@ -123,6 +148,36 @@ class ImportChecker:
                         type(self),
                     )
 
+    @staticmethod
+    def compile_unstructured_glob(s: str) -> Pattern[str]:
+        # Convert the patter to a regex such that ".*"
+        # matches zero or more moduels.
+        parts = s.split(".")
+        transformed_parts = [
+            "(\\..*)?" if p == "*" else "\\." + re.escape(p) for p in parts
+        ]
+        if parts[0] == "*":
+            transformed_parts[0] = ".*"
+        else:
+            transformed_parts[0] = re.escape(parts[0])
+        return re.compile("".join(transformed_parts) + "\\Z")
+
+    def _is_module_banned(self, module_name: str) -> tuple[bool, str]:
+        if module_name in self.banned_modules:
+            return True, self.banned_modules[module_name]
+
+        # Check unustructed wildcards
+        for banned_pattern, msg in self.banned_unstructured_patterns:
+            if banned_pattern.match(module_name):
+                return True, msg
+
+        # Check structured wildcards
+        for banned_prefix, msg in self.banned_structured_patterns:
+            if module_name.startswith(banned_prefix[:-1]):
+                return True, msg
+
+        return False, ""
+
     def rule_I251(
         self, node: ast.AST
     ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
@@ -143,10 +198,9 @@ class ImportChecker:
 
         for module_name in module_names:
 
-            if module_name in self.banned_modules:
-                message = self.message_I251.format(
-                    name=module_name, msg=self.banned_modules[module_name]
-                )
+            is_banned, msg = self._is_module_banned(module_name)
+            if is_banned:
+                message = self.message_I251.format(name=module_name, msg=msg)
                 if any(mod.startswith(module_name) for mod in warned):
                     # Do not show an error for this line if we already showed
                     # a more specific error.

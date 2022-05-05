@@ -2,6 +2,9 @@
 History
 =======
 
+4.7.0 (2022-05-05)
+------------------
+
 * Add Mypy-style wildcard support to ``banned-modules``.
 
   Thanks to Chris Elion in `PR #310 <https://github.com/adamchainz/flake8-tidy-imports/pull/319>`__.

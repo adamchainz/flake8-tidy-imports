@@ -59,8 +59,9 @@ For example in ``setup.cfg``:
 .. code-block:: ini
 
     [flake8]
-    banned-modules = mock = Use unittest.mock.
-                     {python2to3}
+    banned-modules =
+      mock = Use unittest.mock.
+      {python2to3}
 
 Note that despite the name, you can ban imported objects too, since the syntax is the same.
 For example:
@@ -68,7 +69,8 @@ For example:
 .. code-block:: ini
 
     [flake8]
-    banned-modules = decimal.Decimal = Use ints and floats only.
+    banned-modules =
+      decimal.Decimal = Use ints and floats only.
 
 Entries containing ``*`` are treated as wildcards matching zero or more path components.
 For example:

@@ -221,7 +221,7 @@ def test_I251_import_mock_config(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "banned-modules = mock = use unittest.mock instead"
+        default_setup_cfg + "banned-modules =\n  mock = use unittest.mock instead"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [

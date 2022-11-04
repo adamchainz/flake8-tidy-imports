@@ -3,7 +3,10 @@ from __future__ import annotations
 import ast
 import re
 import sys
-from typing import TYPE_CHECKING, Any, Generator, Pattern
+from typing import Any
+from typing import Generator
+from typing import Pattern
+from typing import TYPE_CHECKING
 
 from flake8.options.manager import OptionManager
 

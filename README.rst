@@ -2,7 +2,7 @@
 flake8-tidy-imports
 ===================
 
-.. image:: https://img.shields.io/github/workflow/status/adamchainz/flake8-tidy-imports/CI/main?style=for-the-badge
+.. image:: https://img.shields.io/github/actions/workflow/status/adamchainz/flake8-tidy-imports/main.yml?branch=main&style=for-the-badge
    :target: https://github.com/adamchainz/flake8-tidy-imports/actions?workflow=CI
 
 .. image:: https://img.shields.io/pypi/v/flake8-tidy-imports.svg?style=for-the-badge

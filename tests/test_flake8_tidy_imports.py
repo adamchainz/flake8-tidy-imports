@@ -545,7 +545,7 @@ def test_I251_wildcard_precedence(flake8_path, module, expected_message):
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [
-        f"./example.py:1:1: I251 Banned import '{module}' used - {expected_message}.",
+        f"./example.py:1:1: I251 Banned import {module!r} used - {expected_message}.",
     ]
 
 

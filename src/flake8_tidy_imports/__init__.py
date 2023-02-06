@@ -118,7 +118,6 @@ class ImportChecker:
     ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         if isinstance(node, ast.Import):
             for alias in node.names:
-
                 if "." not in alias.name:
                     from_name = None
                     imported_name = alias.name
@@ -126,7 +125,6 @@ class ImportChecker:
                     from_name, imported_name = alias.name.rsplit(".", 1)
 
                 if imported_name == alias.asname:
-
                     if from_name:
                         rewritten = f"from {from_name} import {imported_name}"
                     else:
@@ -141,7 +139,6 @@ class ImportChecker:
         elif isinstance(node, ast.ImportFrom):
             for alias in node.names:
                 if alias.name == alias.asname:
-
                     rewritten = f"from {node.module} import {alias.name}"
 
                     yield (
@@ -200,7 +197,6 @@ class ImportChecker:
         warned: set[str] = set()
 
         for module_name in module_names:
-
             is_banned, msg = self._is_module_banned(module_name)
             if is_banned:
                 message = self.message_I251.format(name=module_name, msg=msg)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import re
 import sys
+from pathlib import Path
 from typing import Any
 from typing import Generator
 from typing import Pattern
@@ -17,8 +18,9 @@ else:
 
 if TYPE_CHECKING:
     from typing import Literal
+    from argparse import Namespace
 
-    BanRelativeImportsType = Literal["", "parents", "true"]
+    BanRelativeImportsType = Literal["", "parents", "true", "force-siblings"]
 else:
     BanRelativeImportsType = str
 
@@ -38,8 +40,9 @@ class ImportChecker:
     banned_unstructured_patterns: list[tuple[Pattern[str], str]]
     ban_relative_imports: BanRelativeImportsType
 
-    def __init__(self, tree: ast.AST) -> None:
+    def __init__(self, tree: ast.AST, filename: str | None = None) -> None:
         self.tree = tree
+        self.package = self.guess_package(filename)
 
     @classmethod
     def add_options(cls, parser: OptionManager) -> None:
@@ -60,13 +63,13 @@ class ImportChecker:
             nargs="?",
             const="true",
             parse_from_config=True,
-            choices=["", "parents", "true"],
+            choices=["", "parents", "true", "force-siblings"],
             default="",
             help="Ban relative imports, from parental modules or in all cases.",
         )
 
     @classmethod
-    def parse_options(cls, options: Any) -> None:
+    def parse_options(cls, options: Namespace) -> None:
         lines = [
             line.strip() for line in options.banned_modules.split("\n") if line.strip()
         ]
@@ -106,9 +109,10 @@ class ImportChecker:
 
     message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
     message_I251 = "I251 Banned import '{name}' used - {msg}."
+    message_I253 = "I253 Use relative sibling import - rewrite as 'from {} import …'."
 
     def run(self) -> Generator[tuple[int, int, str, type[Any]], None, None]:
-        rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
+        rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252, self.rule_I253)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
                 yield from rule_func(node)
@@ -213,7 +217,7 @@ class ImportChecker:
     ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         if self.ban_relative_imports == "":
             return
-        elif self.ban_relative_imports == "parents":
+        elif self.ban_relative_imports in ("parents", "force-siblings"):
             min_node_level = 1
             message = "I252 Relative imports from parent modules are banned."
         else:
@@ -226,6 +230,31 @@ class ImportChecker:
             and node.level > min_node_level
         ):
             yield (node.lineno, node.col_offset, message, type(self))
+
+    def rule_I253(
+        self, node: ast.AST
+    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
+        if (
+            self.ban_relative_imports == "force-siblings"
+            and isinstance(node, ast.ImportFrom)
+            and node.level == 0
+            and self.package
+            and node.module
+            and node.module.startswith(self.package)
+        ):
+            msg = self.message_I253.format(node.module[len(self.package) :] or ".")
+            yield (node.lineno, node.col_offset, msg, type(self))
+
+    def guess_package(self, filename: str | None) -> str | None:
+        parts: list[str] = []
+        # Package is only required for I253,
+        # so we skip guessing if the rule is not enabled save some IOs
+        if filename and self.ban_relative_imports == "force-siblings":
+            dir = Path(filename).parent
+            while (dir / "__init__.py").exists():
+                parts.append(dir.name)
+                dir = dir.parent
+        return ".".join(reversed(parts)) or None
 
     python2to3_banned_modules = {
         "__builtin__": "use six.moves.builtins as a drop-in replacement",

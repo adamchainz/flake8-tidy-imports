@@ -697,7 +697,12 @@ def test_I252_relative_import_commandline(flake8_path):
     assert result.out_lines == ["./example.py:1:1: I252 Relative imports are banned."]
 
 
-def test_I252_relative_import_parents1(flake8_path):
+@pytest.fixture(params=["parents", "force-siblings"])
+def ban_type(request):
+    return request.param
+
+
+def test_I252_relative_import_parents1(flake8_path, ban_type):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -708,13 +713,13 @@ def test_I252_relative_import_parents1(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = parents"
+        default_setup_cfg + f"ban-relative-imports = {ban_type}"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == []
 
 
-def test_I252_relative_import_parents2(flake8_path):
+def test_I252_relative_import_parents2(flake8_path, ban_type):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -725,13 +730,13 @@ def test_I252_relative_import_parents2(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = parents"
+        default_setup_cfg + f"ban-relative-imports = {ban_type}"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == []
 
 
-def test_I252_relative_import_parents3(flake8_path):
+def test_I252_relative_import_parents3(flake8_path, ban_type):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -742,7 +747,7 @@ def test_I252_relative_import_parents3(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = parents"
+        default_setup_cfg + f"ban-relative-imports = {ban_type}"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [
@@ -750,7 +755,7 @@ def test_I252_relative_import_parents3(flake8_path):
     ]
 
 
-def test_I252_relative_import_parents4(flake8_path):
+def test_I252_relative_import_parents4(flake8_path, ban_type):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -761,7 +766,7 @@ def test_I252_relative_import_parents4(flake8_path):
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + "ban-relative-imports = parents"
+        default_setup_cfg + f"ban-relative-imports = {ban_type}"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [
@@ -769,7 +774,7 @@ def test_I252_relative_import_parents4(flake8_path):
     ]
 
 
-def test_I252_relative_import_parents_commandline(flake8_path):
+def test_I252_relative_import_parents_commandline(flake8_path, ban_type):
     (flake8_path / "example.py").write_text(
         dedent(
             """\
@@ -779,7 +784,132 @@ def test_I252_relative_import_parents_commandline(flake8_path):
             """
         )
     )
-    result = flake8_path.run_flake8(["--ban-relative-imports=parents"])
+    result = flake8_path.run_flake8([f"--ban-relative-imports={ban_type}"])
     assert result.out_lines == [
         "./example.py:1:1: I252 Relative imports from parent modules are banned."
     ]
+
+
+# I253
+
+
+def test_I253_not_activated(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").write_text("from package import _")
+    result = flake8_path.run_flake8()
+    assert not result.out_lines
+
+
+def test_I253_in_module(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    # No __init__.py file
+    (package / "module.py").write_text("from package import _")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert not result.out_lines
+
+
+def test_I253_relative_sibling_import(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").write_text("from . import _")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert not result.out_lines
+
+
+def test_I253_relative_sibling_nested_import(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").write_text("from .nested import _")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert not result.out_lines
+
+
+def test_I253_module_import_from_package(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").write_text("from package import _")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert result.out_lines == [
+        (
+            "./package/module.py:1:1: I253 "
+            "Use relative sibling import - rewrite as 'from . import …'."
+        )
+    ]
+
+
+def test_I253_module_import_from_nested(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").write_text("from package.nested import _")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert result.out_lines == [
+        (
+            "./package/module.py:1:1: I253 "
+            "Use relative sibling import - rewrite as 'from .nested import …'."
+        )
+    ]
+
+
+def test_I253_nested_module_import_from_sibling(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    nested = package / "nested"
+    nested.mkdir()
+    (nested / "__init__.py").touch()
+    (nested / "module.py").write_text("from package.nested.other import _")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert result.out_lines == [
+        (
+            "./package/nested/module.py:1:1: I253 "
+            "Use relative sibling import - rewrite as 'from .other import …'."
+        )
+    ]
+
+
+def test_I253_module_import_from_nested_package(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    (package / "module.py").write_text("from package.nested.whatever import foo")
+    nested = package / "nested"
+    nested.mkdir()
+    (nested / "__init__.py").touch()
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert result.out_lines == [
+        (
+            "./package/module.py:1:1: I253 "
+            "Use relative sibling import - rewrite as 'from .nested.whatever import …'."
+        )
+    ]
+
+
+def test_I253_nested_module_inport_from_another_nested(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    (package / "__init__.py").touch()
+    nested = package / "nested"
+    nested.mkdir()
+    (nested / "__init__.py").touch()
+    (nested / "module.py").write_text("from package.other.nested import foo")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert not result.out_lines
+
+
+def test_I253_nested_module_import_from_another_nested_same_name(flake8_path):
+    package = flake8_path / "package"
+    package.mkdir()
+    # No root init
+    nested = package / "nested"
+    nested.mkdir()
+    (nested / "__init__.py").touch()
+    (nested / "module.py").write_text("from package.other.nested import foo")
+    result = flake8_path.run_flake8(["--ban-relative-imports=force-siblings"])
+    assert not result.out_lines

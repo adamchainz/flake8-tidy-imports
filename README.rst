@@ -95,6 +95,21 @@ For example:
 
 (If you want to ban absolute imports, you can put your project's modules in ``banned-modules``.)
 
+``import-idioms``
+---------------------
+
+Config for rule I253 (below). Should contain a list where each line is a recommended import statement to follow.
+
+For example in ``setup.cfg``:
+
+.. code-block:: ini
+
+    [flake8]
+    import-idioms =
+      import datetime as dt
+      from django.db import modules
+      from django.utils import timezone as dj_timezone
+
 Rules
 =====
 
@@ -160,6 +175,20 @@ Absolute imports, or relative imports from siblings, are recommended by `PEP8 <h
 
         from . import sibling
         from .sibling import example
+
+I253: Enforce <import-idioms> statements.
+-------------------------------------------
+
+Complains if you don't follow ``import-idioms`` pattern.
+
+By default, there are no import idioms - you should configure them with ``import-idioms`` as described above in 'Options'.
+
+The message has two part: banned import and required import
+
+.. code-block:: sh
+
+    $ flake8 file.py
+    file.py:1:1: I253 Ban 'import datetime'. Use 'import datetime as dt'.
 
 See also
 --------

@@ -81,10 +81,11 @@ For example:
 ``ban-relative-imports``
 ------------------------
 
-Controls rule I252 (below). Accepts two values:
+Controls rule I252 and I253 (below). Accepts tree values:
 
-* ``parents`` - bans imports from parent modules (and grandparents, etc.), i.e. with more than one ``.``.
 * ``true`` - bans all relative imports.
+* ``parents`` - bans imports from parent modules (and grandparents, etc.), i.e. with more than one ``.``.
+* ``force-siblings`` - bans imports from parent modules but requires relative imports for siblings
 
 For example:
 
@@ -160,6 +161,28 @@ Absolute imports, or relative imports from siblings, are recommended by `PEP8 <h
 
         from . import sibling
         from .sibling import example
+
+
+I253: Relative import for siblings is required.
+--------------------------------------------
+
+Complains about use of absolute imports for sibling imports in a package.
+
+This rule is enabled by setting ``ban-relative-imports=force-siblings``
+and only works in packages when the file path match the package.
+
+In a module `package.sub.module`, it will complains for the following imports:
+
+* ``from package.sub.foo import foo``
+* ``from package.sub.foo.bar import foobar``
+* ``from package.sub.bar import bar``
+
+But not those:
+
+* ``from package.other.foo import foo``
+* ``from other.foo import foo``
+* ``from .foo.bar import foobar``
+
 
 See also
 --------

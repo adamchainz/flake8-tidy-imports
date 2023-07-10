@@ -2,25 +2,13 @@ from __future__ import annotations
 
 import ast
 import re
-import sys
+from importlib.metadata import version
 from typing import Any
 from typing import Generator
+from typing import Literal
 from typing import Pattern
-from typing import TYPE_CHECKING
 
 from flake8.options.manager import OptionManager
-
-if sys.version_info >= (3, 8):
-    from importlib.metadata import version
-else:
-    from importlib_metadata import version
-
-if TYPE_CHECKING:
-    from typing import Literal
-
-    BanRelativeImportsType = Literal["", "parents", "true"]
-else:
-    BanRelativeImportsType = str
 
 
 class ImportChecker:
@@ -36,7 +24,7 @@ class ImportChecker:
     banned_modules: dict[str, str]
     banned_structured_patterns: list[tuple[str, str]]
     banned_unstructured_patterns: list[tuple[Pattern[str], str]]
-    ban_relative_imports: BanRelativeImportsType
+    ban_relative_imports: Literal["", "parents", "true"]
 
     def __init__(self, tree: ast.AST) -> None:
         self.tree = tree

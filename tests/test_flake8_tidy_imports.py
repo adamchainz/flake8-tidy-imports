@@ -1,16 +1,11 @@
 from __future__ import annotations
 
 import re
-import sys
+from importlib.metadata import version
 from textwrap import dedent
 from unittest.mock import Mock
 
 import pytest
-
-if sys.version_info >= (3, 8):
-    from importlib.metadata import version
-else:
-    from importlib_metadata import version
 
 from src.flake8_tidy_imports import ImportChecker
 

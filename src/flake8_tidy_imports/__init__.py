@@ -110,7 +110,7 @@ class ImportChecker:
 
     message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
     message_I251 = "I251 Banned import '{name}' used - {msg}."
-    message_I253 = "I253 Ban '{name}'. Use '{msg}'."
+    message_I253 = "I253 Swap '{name}' for idiom '{msg}'."
 
     def run(self) -> Generator[tuple[int, int, str, type[Any]], None, None]:
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252, self.rule_I253)

@@ -842,13 +842,13 @@ def test_I253_check_output_of_comma_separated_import_banned(flake8_path):
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [
-        "./example.py:1:1: I253 Ban 'from foo.bar.baz import corge'. "
-        + "Use 'from foo.bar import baz'."
+        "./example.py:1:1: I253 Swap 'from foo.bar.baz import corge' "
+        + "for idiom 'from foo.bar import baz'."
     ]
 
 
 @pytest.mark.parametrize(
-    "idiomatic_imports, import_statement, client_code",
+    "idiom, import_statement, client_code",
     (
         ("import datetime as dt", "import datetime", "datetime"),
         ("from foo.bar import baz", "from foo.bar.baz import qux", "qux"),
@@ -865,7 +865,7 @@ def test_I253_check_output_of_comma_separated_import_banned(flake8_path):
     ),
 )
 def test_I253_import_statement_banned(
-    flake8_path, idiomatic_imports, import_statement, client_code
+    flake8_path, idiom, import_statement, client_code
 ):
     (flake8_path / "example.py").write_text(
         dedent(
@@ -877,11 +877,11 @@ def test_I253_import_statement_banned(
         )
     )
     (flake8_path / "setup.cfg").write_text(
-        default_setup_cfg + f"import-idioms = {idiomatic_imports}"
+        default_setup_cfg + f"import-idioms = {idiom}"
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [
-        f"./example.py:1:1: I253 Ban '{import_statement}'. Use '{idiomatic_imports}'."
+        f"./example.py:1:1: I253 Swap '{import_statement}' for idiom '{idiom}'."
     ]
 
 

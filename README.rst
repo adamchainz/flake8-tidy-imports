@@ -96,9 +96,10 @@ For example:
 (If you want to ban absolute imports, you can put your project's modules in ``banned-modules``.)
 
 ``import-idioms``
----------------------
+-----------------
 
-Config for rule I253 (below). Should contain a list where each line is a recommended import statement to follow.
+Config for rule I253 (below).
+Should contain a list where each line is a recommended import statement to follow.
 
 For example in ``setup.cfg``:
 
@@ -107,8 +108,11 @@ For example in ``setup.cfg``:
     [flake8]
     import-idioms =
       import datetime as dt
-      from django.db import modules
-      from django.utils import timezone as dj_timezone
+      import polars as pl
+      from django.db import models
+      from django.utils.translation import gettext_lazy as _
+
+(``import datetime as dt`` per `this blog post <https://adamj.eu/tech/2019/09/12/how-i-import-pythons-datetime-module/>`__.)
 
 Rules
 =====

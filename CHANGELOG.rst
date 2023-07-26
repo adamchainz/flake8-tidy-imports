@@ -2,6 +2,10 @@
 Changelog
 =========
 
+* Add rule I253 to request idiomatic imports, controlled by the new ``import-idioms`` option.
+
+  Thanks to Hoàng Quốc Hưng in `PR #461 <https://github.com/adamchainz/flake8-tidy-imports/pull/461>`__.
+
 4.10.0 (2023-07-10)
 -------------------
 

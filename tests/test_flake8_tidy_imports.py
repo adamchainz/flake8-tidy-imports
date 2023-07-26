@@ -782,9 +782,6 @@ def test_I252_relative_import_parents_commandline(flake8_path):
 
 
 # I253
-I253_stdout = "./example.py:1:1: I253 Ban '{statement}'. Use '{idiomatic_imports}'."
-
-
 @pytest.mark.parametrize(
     "suggested_idiom, imported_module, as_name, expected",
     (
@@ -845,9 +842,8 @@ def test_I253_check_output_of_comma_separated_import_banned(flake8_path):
     )
     result = flake8_path.run_flake8()
     assert result.out_lines == [
-        I253_stdout.format(
-            statement=import_statement, idiomatic_imports="from foo.bar import baz"
-        )
+        "./example.py:1:1: I253 Ban 'from foo.bar.baz import corge'. "
+        + "Use 'from foo.bar import baz'."
     ]
 
 

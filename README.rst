@@ -15,7 +15,7 @@ flake8-tidy-imports
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
-A `flake8 <https://flake8.readthedocs.io/en/latest/index.html>`_ plugin that helps you write tidier imports.
+A `flake8 <https://flake8.readthedocs.io/en/latest/>`_ plugin that helps you write tidier imports.
 
 Requirements
 ============

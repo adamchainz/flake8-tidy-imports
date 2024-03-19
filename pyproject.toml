@@ -36,9 +36,6 @@ urls = {Changelog = "https://github.com/adamchainz/flake8-tidy-imports/blob/main
 [project.entry-points."flake8.extension"]
 I25 = "flake8_tidy_imports:ImportChecker"
 
-[tool.black]
-target-version = ['py38']
-
 [tool.isort]
 add_imports = [
     "from __future__ import annotations"

@@ -8,12 +8,14 @@ requires = [
 name = "flake8-tidy-imports"
 version = "4.10.0"
 description = "A flake8 plugin that helps you write tidier imports."
-readme = {file = "README.rst", content-type = "text/x-rst"}
+readme = { file = "README.rst", content-type = "text/x-rst" }
 keywords = [
   "flake8_tidy_imports",
 ]
-license = {text = "MIT"}
-authors = [{name = "Adam Johnson", email = "me@adamj.eu"}]
+license = { text = "MIT" }
+authors = [
+  { name = "Adam Johnson", email = "me@adamj.eu" },
+]
 requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -32,13 +34,11 @@ classifiers = [
 dependencies = [
   "flake8>=3.8",
 ]
-urls = {Changelog = "https://github.com/adamchainz/flake8-tidy-imports/blob/main/CHANGELOG.rst",Funding = "https://adamj.eu/books/",Repository = "https://github.com/adamchainz/flake8-tidy-imports"}
-[project.entry-points."flake8.extension"]
-I25 = "flake8_tidy_imports:ImportChecker"
-
+urls = { Changelog = "https://github.com/adamchainz/flake8-tidy-imports/blob/main/CHANGELOG.rst", Funding = "https://adamj.eu/books/", Repository = "https://github.com/adamchainz/flake8-tidy-imports" }
+entry-points."flake8.extension".I25 = "flake8_tidy_imports:ImportChecker"
 [tool.isort]
 add_imports = [
-    "from __future__ import annotations"
+  "from __future__ import annotations",
 ]
 force_single_line = true
 profile = "black"

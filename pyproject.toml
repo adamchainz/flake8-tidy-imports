@@ -36,6 +36,7 @@ dependencies = [
 ]
 urls = { Changelog = "https://github.com/adamchainz/flake8-tidy-imports/blob/main/CHANGELOG.rst", Funding = "https://adamj.eu/books/", Repository = "https://github.com/adamchainz/flake8-tidy-imports" }
 entry-points."flake8.extension".I25 = "flake8_tidy_imports:ImportChecker"
+
 [tool.isort]
 add_imports = [
   "from __future__ import annotations",

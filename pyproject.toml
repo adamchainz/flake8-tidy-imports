@@ -8,11 +8,10 @@ requires = [
 name = "flake8-tidy-imports"
 version = "4.10.0"
 description = "A flake8 plugin that helps you write tidier imports."
-readme = { file = "README.rst", content-type = "text/x-rst" }
+readme = "README.rst"
 keywords = [
   "flake8_tidy_imports",
 ]
-license = { text = "MIT" }
 authors = [
   { name = "Adam Johnson", email = "me@adamj.eu" },
 ]

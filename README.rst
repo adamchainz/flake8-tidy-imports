@@ -95,6 +95,26 @@ For example:
 
 (If you want to ban absolute imports, you can put your project's modules in ``banned-modules``.)
 
+``import-idioms``
+-----------------
+
+Config for rule I253 (below).
+Should contain a list where each line is either an idiomatic import form for code to follow, or a Python comment, or blank.
+
+For example in ``setup.cfg``:
+
+.. code-block:: ini
+
+    [flake8]
+    import-idioms =
+      # https://adamj.eu/tech/2019/09/12/how-i-import-pythons-datetime-module/
+      import datetime as dt
+
+      import polars as pl
+
+      from django.db import models
+      from django.utils.translation import gettext_lazy as _
+
 Rules
 =====
 
@@ -160,6 +180,19 @@ Absolute imports, or relative imports from siblings, are recommended by `PEP8 <h
 
         from . import sibling
         from .sibling import example
+
+I253: Swap ``<used>`` for idiom ``<idiom>``.
+--------------------------------------------
+
+Complains about imports not matching idioms defined in ``import-idioms``.
+By default, there are no import idioms - configure them with ``import-idioms`` as described above in 'Options'.
+
+The message shows the import that should be swapped to a defined idiom:
+
+.. code-block:: sh
+
+    $ flake8 file.py
+    file.py:1:1: I253 Swap 'import datetime' for idiom 'import datetime as dt'.
 
 See also
 --------

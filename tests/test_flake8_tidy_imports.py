@@ -585,6 +585,7 @@ def test_I251_is_module_banned(banned_module, imported_module, expected):
     checker = ImportChecker(Mock())
     options = Mock()
     options.banned_modules = banned_modules_str
+    options.import_idioms = ""
     options.ban_relative_imports = False
 
     # Make sure we get the expected result on the module we're trying to import
@@ -778,3 +779,124 @@ def test_I252_relative_import_parents_commandline(flake8_path):
     assert result.out_lines == [
         "./example.py:1:1: I252 Relative imports from parent modules are banned."
     ]
+
+
+# I253
+@pytest.mark.parametrize(
+    "suggested_idiom, imported_module, as_name, expected",
+    (
+        ("import datetime as dt", "datetime", "dt", False),
+        ("import pandas as pd", "pandas", "", True),
+        ("from django.db import models", "django.db.models", "", False),
+        ("from django.db import models", "django.db.models.Q", "", True),
+    ),
+)
+def test_I253_is_idiom_banned(suggested_idiom, imported_module, as_name, expected):
+    # Set up a simple banned-modules string
+    idiomatic_imports_str = f"{suggested_idiom}"
+
+    # Set up an ImportChecker and pass the options in
+    checker = ImportChecker(Mock())
+    options = Mock()
+    options.banned_modules = ""
+    options.import_idioms = idiomatic_imports_str
+
+    # Make sure we get the expected result on the module we're trying to import
+    checker.parse_options(options)
+    is_banned, _ = checker._is_idiom_banned(imported_module, as_name)
+    assert is_banned is expected
+
+
+def test_I253_idiom_match(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo.bar import baz, qux
+
+            baz
+            qux
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg + "import-idioms = from foo.bar import baz"
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == []
+
+
+def test_I253_check_output_of_comma_separated_import_banned(flake8_path):
+    import_statement = "from foo.bar.baz import corge"
+
+    (flake8_path / "example.py").write_text(
+        dedent(
+            f"""\
+            {import_statement}
+
+            corge
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg + "import-idioms = from foo.bar import baz, qux"
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == [
+        "./example.py:1:1: I253 Swap 'from foo.bar.baz import corge' "
+        + "for idiom 'from foo.bar import baz'."
+    ]
+
+
+@pytest.mark.parametrize(
+    "idiom, import_statement, client_code",
+    (
+        ("import datetime as dt", "import datetime", "datetime"),
+        ("from foo.bar import baz", "from foo.bar.baz import qux", "qux"),
+        (
+            "from django.utils import timezone as dj_timezone",
+            "from django.utils import timezone",
+            "timezone",
+        ),
+        (
+            "from django.utils import timezone as dj_timezone",
+            "from django.utils.timezone import localdate",
+            "localdate",
+        ),
+    ),
+)
+def test_I253_import_statement_banned(
+    flake8_path, idiom, import_statement, client_code
+):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            f"""\
+            {import_statement}
+
+            {client_code}
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg + f"import-idioms = {idiom}"
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == [
+        f"./example.py:1:1: I253 Swap '{import_statement}' for idiom '{idiom}'."
+    ]
+
+
+def test_I253_idiom_bypass(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo import bar
+
+            bar
+            """
+        )
+    )
+    (flake8_path / "setup.cfg").write_text(
+        default_setup_cfg + "import-idioms = from foo.bar import baz"
+    )
+    result = flake8_path.run_flake8()
+    assert result.out_lines == []

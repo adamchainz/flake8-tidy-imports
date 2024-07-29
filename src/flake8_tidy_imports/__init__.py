@@ -95,15 +95,13 @@ class ImportChecker:
     message_I250 = "I250 Unnecessary import alias - rewrite as '{}'."
     message_I251 = "I251 Banned import '{name}' used - {msg}."
 
-    def run(self) -> Generator[tuple[int, int, str, type[Any]], None, None]:
+    def run(self) -> Generator[tuple[int, int, str, type[Any]]]:
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
                 yield from rule_func(node)
 
-    def rule_I250(
-        self, node: ast.AST
-    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
+    def rule_I250(self, node: ast.AST) -> Generator[tuple[int, int, str, type[Any]]]:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if "." not in alias.name:
@@ -166,9 +164,7 @@ class ImportChecker:
 
         return False, ""
 
-    def rule_I251(
-        self, node: ast.AST
-    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
+    def rule_I251(self, node: ast.AST) -> Generator[tuple[int, int, str, type[Any]]]:
         if isinstance(node, ast.Import):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
@@ -196,9 +192,7 @@ class ImportChecker:
                     warned.add(module_name)
                 yield (node.lineno, node.col_offset, message, type(self))
 
-    def rule_I252(
-        self, node: ast.AST
-    ) -> Generator[tuple[int, int, str, type[Any]], None, None]:
+    def rule_I252(self, node: ast.AST) -> Generator[tuple[int, int, str, type[Any]]]:
         if self.ban_relative_imports == "":
             return
         elif self.ban_relative_imports == "parents":

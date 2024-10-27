@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import ast
 import re
+from collections.abc import Generator
 from importlib.metadata import version
+from re import Pattern
 from typing import Any
-from typing import Generator
 from typing import Literal
-from typing import Pattern
 
 from flake8.options.manager import OptionManager
 

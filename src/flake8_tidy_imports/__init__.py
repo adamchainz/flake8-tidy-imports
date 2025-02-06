@@ -202,11 +202,7 @@ class ImportChecker:
             min_node_level = 0
             message = "I252 Relative imports are banned."
 
-        if (
-            self.ban_relative_imports
-            and isinstance(node, ast.ImportFrom)
-            and node.level > min_node_level
-        ):
+        if isinstance(node, ast.ImportFrom) and node.level > min_node_level:
             yield (node.lineno, node.col_offset, message, type(self))
 
     python2to3_banned_modules = {

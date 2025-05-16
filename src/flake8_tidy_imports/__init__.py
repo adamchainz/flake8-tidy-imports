@@ -79,7 +79,7 @@ class ImportChecker:
             elif module.endswith(".*"):
                 # structured
                 cls.banned_structured_patterns.append((module, message))
-                # Also check for exact matches without the wilcard
+                # Also check for exact matches without the wildcard
                 # e.g. "foo.*" matches "foo"
                 prefix = module[:-2]
                 if prefix not in cls.banned_modules:
@@ -87,7 +87,7 @@ class ImportChecker:
             else:
                 cls.banned_modules[module] = message
 
-        # Sort the structured patterns so we match the specifc ones first.
+        # Sort the structured patterns so we match the specific ones first.
         cls.banned_structured_patterns.sort(key=lambda x: len(x[0]), reverse=True)
 
         cls.ban_relative_imports = options.ban_relative_imports
@@ -137,7 +137,7 @@ class ImportChecker:
     @staticmethod
     def compile_unstructured_glob(s: str) -> Pattern[str]:
         # Convert the patter to a regex such that ".*"
-        # matches zero or more moduels.
+        # matches zero or more modules.
         parts = s.split(".")
         transformed_parts = [
             "(\\..*)?" if p == "*" else "\\." + re.escape(p) for p in parts

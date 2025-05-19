@@ -5,8 +5,7 @@ import re
 from collections.abc import Generator
 from importlib.metadata import version
 from re import Pattern
-from typing import Any
-from typing import Literal
+from typing import Any, Literal
 
 from flake8.options.manager import OptionManager
 

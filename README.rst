@@ -51,7 +51,7 @@ Config for rule I251 (below).
 Should contain a map where each line is a banned import string, followed by '=', then the message to use when encountering that import.
 
 There is also a special directive to ban a preselected list of removed/moved modules between Python 2 and Python 3, recommending replacements from `six
-<https://pythonhosted.org/six/>`_ where possible.
+<https://six.readthedocs.io/>`_ where possible.
 It can be turned on by adding ``{python2to3}`` to the list of ``banned-modules``.
 
 For example in ``setup.cfg``:
@@ -117,7 +117,7 @@ The message includes the suggested rewrite (which may not *always* be correct), 
     $ flake8 file.py
     file.py:1:1: I250 Unnecessary import alias - rewrite as 'from foo import bar'.
 
-Such aliases can be automatically fixed by ``isort`` if you activate its `remove_redundant_aliases option <https://pycqa.github.io/isort/docs/configuration/options/#remove-redundant-aliases>`__.
+Such aliases can be automatically fixed by ``isort`` if you activate its `remove_redundant_aliases option <https://pycqa.github.io/isort/docs/configuration/options.html#remove-redundant-aliases>`__.
 
 I251: Banned import ``<import>`` used.
 --------------------------------------

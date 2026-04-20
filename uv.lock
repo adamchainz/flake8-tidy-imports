@@ -59,7 +59,7 @@ requires-dist = [{ name = "flake8", specifier = ">=3.8" }]
 [package.metadata.requires-dev]
 test = [
     { name = "flake8" },
-    { name = "pytest" },
+    { name = "pytest", specifier = ">=9" },
     { name = "pytest-flake8-path" },
     { name = "pytest-randomly" },
 ]

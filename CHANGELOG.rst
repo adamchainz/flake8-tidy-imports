@@ -5,6 +5,8 @@ Changelog
 Unreleased
 ----------
 
+* Detect attribute access in rule I251, such as ``foo.bar`` after ``import foo``.
+
 * Drop Python 3.10 support.
 
 * Support Python 3.15.

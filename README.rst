@@ -122,8 +122,18 @@ Such aliases can be automatically fixed by ``isort`` if you activate its `remove
 I251: Banned import ``<import>`` used.
 --------------------------------------
 
-Complains about use of banned imports.
+Complains about use of banned imports, including attribute access on imported modules.
 By default there are no imports banned - you should configure them with ``banned-modules`` as described above in 'Options'.
+
+For example, with ``foo.bar`` banned, this code is reported:
+
+.. code-block:: python
+
+    import foo
+
+    foo.bar
+
+The check resolves imports through local scopes and ignores names shadowed by local assignments.
 
 The message includes a user-defined part that comes from the configuration.
 For example:

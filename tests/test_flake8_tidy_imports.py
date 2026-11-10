@@ -593,6 +593,216 @@ def test_I251_is_module_banned(banned_module, imported_module, expected):
     assert is_banned is expected
 
 
+def test_I251_attribute_access(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo
+
+            foo.bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:3:1: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_alias(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo as f
+
+            f.bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:3:1: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_shadowed(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo
+
+            def f(foo):
+                foo.bar
+
+            def g():
+                foo = object()
+                foo.bar
+
+            [foo.bar for foo in []]
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == []
+
+
+def test_I251_attribute_access_import_already_banned(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo.bar
+
+            foo.bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:1:1: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_nested(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo
+
+            foo.bar.baz
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:3:1: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_from_import(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo import bar
+
+            bar.baz
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar.baz = use foo_prime.bar.baz instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:3:1: I251 Banned import 'foo.bar.baz' used - "
+            + "use foo_prime.bar.baz instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_local_import(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            def f():
+                import foo
+                foo.bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:3:5: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_does_not_repeat_import_error(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo.bar, foo.baz
+
+            foo.bar
+            foo.baz
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:1:1: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
+def test_I251_attribute_access_root_import_already_banned(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            import foo
+
+            foo.bar
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo = use foo_prime instead"]
+    )
+    assert result.out_lines == [
+        "./example.py:1:1: I251 Banned import 'foo' used - use foo_prime instead."
+    ]
+
+
+def test_I251_attribute_access_from_import_already_banned(flake8_path):
+    (flake8_path / "example.py").write_text(
+        dedent(
+            """\
+            from foo import bar
+
+            bar.baz
+            """
+        )
+    )
+    result = flake8_path.run_flake8(
+        extra_args=["--banned-modules", "foo.bar = use foo_prime.bar instead"]
+    )
+    assert result.out_lines == [
+        (
+            "./example.py:1:1: I251 Banned import 'foo.bar' used - "
+            + "use foo_prime.bar instead."
+        )
+    ]
+
+
 def test_I251_python2to3_import_md5(flake8_path):
     (flake8_path / "example.py").write_text(
         dedent(

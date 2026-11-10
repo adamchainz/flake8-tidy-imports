@@ -9,6 +9,8 @@ from typing import Any, Literal
 
 from flake8.options.manager import OptionManager
 
+from ._attribute_usage import find_banned_attribute_usages
+
 
 class ImportChecker:
     """
@@ -24,6 +26,7 @@ class ImportChecker:
     banned_structured_patterns: list[tuple[str, str]]
     banned_unstructured_patterns: list[tuple[Pattern[str], str]]
     ban_relative_imports: Literal["", "parents", "true"]
+    banned_attribute_usages: dict[ast.Attribute, str]
 
     def __init__(self, tree: ast.AST) -> None:
         self.tree = tree
@@ -95,6 +98,9 @@ class ImportChecker:
     message_I251 = "I251 Banned import '{name}' used - {msg}."
 
     def run(self) -> Generator[tuple[int, int, str, type[Any]]]:
+        self.banned_attribute_usages = find_banned_attribute_usages(
+            self.tree, self._is_module_banned
+        )
         rule_funcs = (self.rule_I250, self.rule_I251, self.rule_I252)
         for node in ast.walk(self.tree):
             for rule_func in rule_funcs:
@@ -164,6 +170,14 @@ class ImportChecker:
         return False, ""
 
     def rule_I251(self, node: ast.AST) -> Generator[tuple[int, int, str, type[Any]]]:
+        if isinstance(node, ast.Attribute):
+            module_name = self.banned_attribute_usages.get(node)
+            if module_name is None:
+                return
+            _, msg = self._is_module_banned(module_name)
+            message = self.message_I251.format(name=module_name, msg=msg)
+            yield (node.lineno, node.col_offset, message, type(self))
+            return
         if isinstance(node, ast.Import):
             module_names = [alias.name for alias in node.names]
         elif isinstance(node, ast.ImportFrom):
